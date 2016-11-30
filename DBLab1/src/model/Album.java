@@ -4,7 +4,7 @@ package model;
 import java.util.ArrayList;
 
 public class Album {
-    
+    //hejsan
     private ArrayList<String> genre;
     private String title;
     private ArrayList<Artist> artists;
