@@ -59,11 +59,13 @@ public class QueryDialog extends Dialog<QueryInfo> {
                 ActionEvent.ACTION, new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent ae) {
-                String queryErrors = con.validateQueryDialogInput();
+                //validationfunction doesn´t exist yet
+                //send checking of data to controller or validate in view?
+                /*String queryErrors = con.validateQueryDialogInput();
                 if (queryErrors = "") { //send checking of data to controller?
                     ae.consume(); //not valid
                     showAlert(queryErrors);
-                }
+                }*/
             }
         });
     }
