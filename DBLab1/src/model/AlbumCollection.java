@@ -4,20 +4,40 @@ package model;
 import java.util.ArrayList;
 
 
-public class AlbumCollection implements DBQueries<Album> {
+public class AlbumCollection implements DBQueries {
     
-    private ArrayList<Album> listOfAlbums;
+    private ArrayList<Album> queriedAlbums;
+    private ArrayList<Artist> queriedArtists;
+    private ArrayList<User> queriedUsers;
+    private ArrayList<Review> queriedReviews;
     
     public AlbumCollection (ArrayList<Album> listOfAlbums) {
-        
-        this.listOfAlbums = listOfAlbums;
+        //Constructor purely for testing
+        this.queriedAlbums = listOfAlbums;
+        this.queriedArtists = queriedArtists;
+        this.queriedUsers = queriedUsers;
+        this.queriedReviews = queriedReviews;
         
     }
     
-    public ArrayList<Album> getAlbumsCopy() {
+    public AlbumCollection () {
         
-        ArrayList<Album> listOfAlbumsCopy = new ArrayList<>(listOfAlbums);
-        return listOfAlbumsCopy;        
+        this.queriedAlbums = new ArrayList<>();
+        this.queriedArtists = new ArrayList<>();
+        this.queriedUsers = new ArrayList<>();
+        this.queriedReviews = new ArrayList<>();
+        
+    }
+    
+    /*public ArrayList<Album> getQueriedAlbums() {
+        
+        ArrayList<Album> queriedAlbumsCopy = new ArrayList<>(queriedAlbums);
+        return queriedAlbumsCopy;        
+    }*/
+    
+    public ArrayList<Album> getCurrentAlbums() {
+        ArrayList<Album> queriedAlbumsCopy = new ArrayList<>(queriedAlbums);
+        return queriedAlbumsCopy;  
     }
     
     @Override
@@ -31,7 +51,7 @@ public class AlbumCollection implements DBQueries<Album> {
     }
     
     @Override
-    public void updateDB(ArrayList<Album> listOfAlbums) {
+    public <Album> void updateDB(ArrayList<Album> listOfAlbums) {
         
         //Code for inserting current listOfAlbums to DB
         

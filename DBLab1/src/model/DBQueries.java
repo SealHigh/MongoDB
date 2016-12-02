@@ -3,10 +3,9 @@ package model;
 
 import java.util.ArrayList;
 
-
-public interface DBQueries <E> {
+public interface DBQueries {
     
-    public abstract ArrayList<E> getSelection(String query);
-    public abstract void updateDB(ArrayList<E> arrayList);
+    public abstract <T> ArrayList<T> getSelection(String query);
+    public abstract <T> void updateDB(ArrayList<T> arrayList);
     
 }

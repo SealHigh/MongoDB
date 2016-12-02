@@ -4,23 +4,27 @@ package model;
 import java.util.ArrayList;
 
 public class Album {
-    //hejsan
-    private ArrayList<String> genre;
-    private String title;
+    
+    private ArrayList<String> genres;
     private ArrayList<Artist> artists;
+    private String title;   
     private String releaseDate;
     private String length;
     private int numberOfSongs;
+    private String genreAsString; //Only to feed cell value factory in table view
+    private String artistAsString; //Only to feed cell value factory in table view
     private ArrayList<Review> reviews;
     
-    public Album (ArrayList<String> genre, String title, ArrayList<Artist> artists, 
+    public Album (ArrayList<String> genres, String title, ArrayList<Artist> artists, 
             String releaseDate, String length, int numberOfSongs) {
-                this.genre = genre;
+                this.genres = genres;
                 this.title = title;
                 this.artists = artists;
                 this.releaseDate = releaseDate;
                 this.length = length;
                 this.numberOfSongs = numberOfSongs;
+                this.artistAsString = artistToString();
+                this.genreAsString = genreToString();
     }
     
     public float getRating () {
@@ -38,14 +42,14 @@ public class Album {
      * @return the genre
      */
     public ArrayList<String> getGenre() {
-        return genre;
+        return genres;
     }
 
     /**
      * @param genre the genre to set
      */
-    public void setGenre(ArrayList<String> genre) {
-        this.genre = genre;
+    public void setGenre(ArrayList<String> genres) {
+        this.genres = genres;
     }
 
     /**
@@ -118,5 +122,36 @@ public class Album {
         this.numberOfSongs = numberOfSongs;
     }
     
+    private String artistToString() {
+        String info = "";
+        for (Artist artist : artists) {
+            info += artist.getName() + ", ";
+        }
+        
+        return info.replaceAll(", $", "");
+    }
+    
+    private String genreToString() {
+        String info = "";
+        for (String genre : genres) {
+            info += genre + ", ";
+        }
+        
+        return info.replaceAll(", $", "");
+    }
+
+    /**
+     * @return the genreAsString
+     */
+    public String getGenreAsString() {
+        return genreAsString;
+    }
+
+    /**
+     * @return the artistAsString
+     */
+    public String getArtistAsString() {
+        return artistAsString;
+    }
     
 }
