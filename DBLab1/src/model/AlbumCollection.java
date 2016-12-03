@@ -35,8 +35,9 @@ public class AlbumCollection implements DBQueries {
         return queriedAlbumsCopy;        
     }*/
     
+    @Override
     public ArrayList<Album> getCurrentAlbums() {
-        ArrayList<Album> queriedAlbumsCopy = new ArrayList<>(queriedAlbums);
+        ArrayList<Album> queriedAlbumsCopy = queriedAlbums;
         return queriedAlbumsCopy;  
     }
     

@@ -192,7 +192,7 @@ public class View {
         artistCol.setStyle("-fx-alignment: CENTER;");
         releaseDateCol.prefWidthProperty().bind(mainTable.widthProperty().divide(10.03));
         releaseDateCol.setStyle("-fx-alignment: CENTER;");
-        genreCol.prefWidthProperty().bind(mainTable.widthProperty().divide(4.02));
+        genreCol.prefWidthProperty().bind(mainTable.widthProperty().divide(5.02));
         genreCol.setStyle("-fx-alignment: CENTER;");
         lengthCol.prefWidthProperty().bind(mainTable.widthProperty().divide(10.03));
         lengthCol.setStyle("-fx-alignment: CENTER;");
@@ -208,7 +208,7 @@ public class View {
         border.setCenter(mainTable);
         
         //Add BorderPane to scene
-        scene = new Scene(border, 800, 500);
+        scene = new Scene(border, 1100, 600);
         
         updateTextArea(ac.getCurrentAlbums());
     }
