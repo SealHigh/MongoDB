@@ -14,7 +14,10 @@ public class Album {
     private String genreAsString; //Only to feed cell value factory in table view
     private String artistAsString; //Only to feed cell value factory in table view
     private ArrayList<Review> reviews;
-    
+
+    public Album (String title) { //Just for testing
+        this.title = title;
+    }
     public Album (ArrayList<String> genres, String title, ArrayList<Artist> artists, 
             String releaseDate, String length, int numberOfSongs) {
                 this.genres = genres;
@@ -46,7 +49,7 @@ public class Album {
     }
 
     /**
-     * @param genre the genre to set
+     * @param genres the genre to set
      */
     public void setGenre(ArrayList<String> genres) {
         this.genres = genres;

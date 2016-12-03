@@ -14,15 +14,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -30,6 +23,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import model.Album;
 import model.User;
 import model.AlbumCollection;
@@ -62,9 +56,13 @@ public class View {
 
             @Override
             public void handle(ActionEvent event) {
-                
-                //con.handleAddAlbumEvent() ?
-                
+                Optional<QueryInfo> result
+                        = queryDialog.showAndWait();
+                if (result.isPresent()) {
+                    con.handleAddAlbumEvent(result.get().getUserInput());
+                    queryDialog.clearField();
+                }
+
             }
         });
         
@@ -198,9 +196,9 @@ public class View {
         lengthCol.setStyle("-fx-alignment: CENTER;");
         nrOfSongsCol.prefWidthProperty().bind(mainTable.widthProperty().divide(10.03));
         nrOfSongsCol.setStyle("-fx-alignment: CENTER;");
-        
+
         mainTable.setItems(albums);
-        mainTable.getColumns().addAll(titleCol, artistCol, releaseDateCol, genreCol, lengthCol, nrOfSongsCol);       
+        mainTable.getColumns().addAll(titleCol, artistCol, releaseDateCol, genreCol, lengthCol, nrOfSongsCol);
         /*******************************************/
         
         //Set TextArea to center of BorderPane        

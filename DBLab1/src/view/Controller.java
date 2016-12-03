@@ -1,7 +1,10 @@
 
 package view;
 
+import model.Album;
 import model.AlbumCollection;
+
+import java.util.Optional;
 
 
 public class Controller {
@@ -17,6 +20,12 @@ public class Controller {
     public void handleQueryEvent(String query) {
         
     }
+    public void handleAddAlbumEvent(String Name) {
+        ac.addAlbum(new Album(Name));
+        view.updateTextArea(ac.getCurrentAlbums());
+
+    }
+
     
     public String validateQueryDialogInput() {
         

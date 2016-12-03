@@ -1,3 +1,5 @@
+package model;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -8,7 +10,7 @@ public class ConnectionConfiguration {
 
     public static Connection getConnection(){
         Connection connection = null;
-        String databaseName = "library";
+        String databaseName = "Labb1";
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
