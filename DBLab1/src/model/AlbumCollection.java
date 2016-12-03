@@ -16,18 +16,18 @@ public class AlbumCollection implements DBQueries {
     private ArrayList<Review> queriedReviews;
     private Connection connection;
     
-    public AlbumCollection (ArrayList<Album> listOfAlbums, Connection connection) {
+    public AlbumCollection (ArrayList<Album> listOfAlbums) {
         //Constructor purely for testing
         this.queriedAlbums = listOfAlbums;
-        this.connection = connection;
+
         this.queriedArtists = queriedArtists;
         this.queriedUsers = queriedUsers;
         this.queriedReviews = queriedReviews;
         
     }
     
-    public AlbumCollection () {
-        
+    public AlbumCollection (Connection connection) {
+        this.connection = connection;
         this.queriedAlbums = new ArrayList<>();
         this.queriedArtists = new ArrayList<>();
         this.queriedUsers = new ArrayList<>();
@@ -47,7 +47,32 @@ public class AlbumCollection implements DBQueries {
     
     @Override
     public ArrayList<Album> getCurrentAlbums() {
-        ArrayList<Album> queriedAlbumsCopy = queriedAlbums;
+        ArrayList<Album> albums = new ArrayList<>();
+        try {
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT title, releaseDate, lengthMinutes, nrOfSongs FROM t_album");
+
+            //Temporary, this will come from database later
+            ArrayList<String> genres = new ArrayList<>();
+            genres.add("Rock");
+            genres.add("Pop");
+            Artist a1 = new Artist("Sting", "Brittish");
+            Artist a2 = new Artist("Prince", "American");
+            ArrayList<Artist> artists = new ArrayList<>();
+            artists.add(a1);
+            artists.add(a2);
+
+            while(rs.next()){
+                Album temp = new Album(genres, rs.getString("title"), artists,
+                        rs.getString("releaseDate"),  rs.getString("lengthMinutes"),  rs.getInt("nrOfSongs"));
+                albums.add(temp);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+
+        }
+        ArrayList<Album> queriedAlbumsCopy = albums;
         return queriedAlbumsCopy;  
     }
     

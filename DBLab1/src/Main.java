@@ -40,6 +40,8 @@ public class Main extends Application {
 
         }
 
+
+
         // Some hard coded values for testing ///////////
         ArrayList<String> genres = new ArrayList<>();
         genres.add("Rock");
@@ -59,8 +61,8 @@ public class Main extends Application {
         albums.add(test2);
         ////////////////////////////////////////////
 
-        AlbumCollection ac = new AlbumCollection(albums, connection);
-        ac.updateDB(albums);
+        AlbumCollection ac = new AlbumCollection(connection);
+
         View view = new View(ac, primaryStage);
         primaryStage.setTitle("Album Collection");
 
