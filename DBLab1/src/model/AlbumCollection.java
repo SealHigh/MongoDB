@@ -75,7 +75,31 @@ public class AlbumCollection implements DBQueries {
         ArrayList<Album> queriedAlbumsCopy = albums;
         return queriedAlbumsCopy;  
     }
-    
+
+    @Override
+    public void addRecord(Object o) {
+        try {
+            Statement stmt = connection.createStatement();
+            Album album = (Album)o;
+            stmt.executeUpdate("INSERT INTO t_album (title, nrOfSongs, lengthMinutes, releaseDate) VALUES ('" + album.getTitle() +
+                    "','" + album.getNumberOfSongs() + "','" + album.getLength() + "','" + album.getReleaseDate() + "')");
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Override
+    public void deleteRecord(Object o) {
+        try {
+            Statement stmt = connection.createStatement();
+            Album album = (Album)o;
+            stmt.executeUpdate("DELETE FROM t_album WHERE albumID =" + album.getAlbumID());
+
+        } catch (Exception e) {
+
+        }
+    }
     @Override
     public ArrayList<Album> getSelection(String query) {
         
@@ -98,6 +122,18 @@ public class AlbumCollection implements DBQueries {
                 model.Album a = (model.Album)album;
                 stmt.executeUpdate("INSERT INTO t_album (title, nrOfSongs, lengthMinutes, releaseDate) VALUES ('"+ a.getTitle() +
                         "','" + a.getNumberOfSongs() + "','" + a.getLength() + "','" + a.getReleaseDate()+"')");
+
+                //Get the albumID of the album
+                ResultSet albumID = stmt.executeQuery("SELECT albumId FROM t_album");
+                for (String genre: a.getGenre()
+                     ) {
+                    try {
+                        stmt.executeUpdate("INSERT INTO t_genre (albumId, genre) VALUES ('"+ albumID.getInt("albumId") +"','" + genre+"')");
+                    }
+                    catch (Exception e){
+
+                    }
+                }
 
                 ResultSet rs = stmt.executeQuery("SELECT title FROM t_album");
                 while (rs.next()) {

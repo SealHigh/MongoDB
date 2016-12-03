@@ -4,7 +4,8 @@ package model;
 import java.util.ArrayList;
 
 public class Album {
-    
+
+    private int albumID;
     private ArrayList<String> genres;
     private ArrayList<Artist> artists;
     private String title;   
@@ -41,7 +42,20 @@ public class Album {
         
         return ((float)total / reviews.size());
     }
-    
+
+    /**
+     *
+     * @return the albumID
+     */
+    public int getAlbumID(){return albumID;}
+
+    /**
+     * Set albumID
+     * @param albumID
+     */
+    public void setAlbumID(int albumID){this.albumID = albumID;}
+
+
     /**
      * @return the genre
      */

@@ -14,7 +14,7 @@ public class ConnectionConfiguration {
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://81.230.86.113/" + databaseName +"?autoReconnect=true&useSSL=false", "root", "root");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/" + databaseName +"?autoReconnect=true&useSSL=false", "root", "root");
         }catch (Exception e){
             e.printStackTrace();
         }

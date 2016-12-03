@@ -43,26 +43,27 @@ public class Main extends Application {
 
 
         // Some hard coded values for testing ///////////
-//        ArrayList<String> genres = new ArrayList<>();
-//        genres.add("Rock");
-//        genres.add("Pop");
-//        Artist a1 = new Artist("Sting", "Brittish");
-//        Artist a2 = new Artist("Prince", "American");
-//        ArrayList<Artist> artists = new ArrayList<>();
-//        artists.add(a1);
-//        artists.add(a2);
-//
-//        Album test1 = new Album(genres, "The Score", artists,
-//                "1990-08-12", "58", 12);
-//        Album test2 = new Album(genres, "The Heist", artists,
-//                "2003-01-28", "33", 5);
-//        ArrayList<Album> albums = new ArrayList<>();
-//        albums.add(test1);
-//        albums.add(test2);
+        ArrayList<String> genres = new ArrayList<>();
+        genres.add("Rock");
+        genres.add("Pop");
+        Artist a1 = new Artist("Sting", "Brittish");
+        Artist a2 = new Artist("Prince", "American");
+        ArrayList<Artist> artists = new ArrayList<>();
+        artists.add(a1);
+        artists.add(a2);
+
+        Album test1 = new Album(genres, "The Score", artists,
+                "1990-08-12", "58", 12);
+        test1.setAlbumID(1538);
+        Album test2 = new Album(genres, "The Heist", artists,
+                "2003-01-28", "33", 5);
+        ArrayList<Album> albums = new ArrayList<>();
+        albums.add(test1);
+        albums.add(test2);
         ////////////////////////////////////////////
 
         AlbumCollection ac = new AlbumCollection(connection);
-
+        ac.deleteRecord(test1);
         View view = new View(ac, primaryStage);
         primaryStage.setTitle("Album Collection");
 
