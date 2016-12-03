@@ -34,9 +34,9 @@ public class Main extends Application {
         try {
             connection =  ConnectionConfiguration.getConnection();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
 
         }
 
@@ -129,7 +129,7 @@ public class Main extends Application {
 
     }
 
-    public static void Main(String[] args) {
+    public static void main(String[] args) {
         launch(args);
     }
 }

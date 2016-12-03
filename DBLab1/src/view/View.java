@@ -35,6 +35,7 @@ public class View {
 
     private AlbumCollection ac;
     private QueryDialog queryDialog;
+    private AddDialog addDialog;
     private Stage primaryStage;
     private Scene scene;
     private TableView<Album> mainTable;
@@ -46,21 +47,24 @@ public class View {
         this.primaryStage = primaryStage;
         Controller con = new Controller(ac, this);
         queryDialog = new QueryDialog();
+        addDialog = new AddDialog();
         //sbd = new SearchBooksDialog(primaryStage);
         
         border = new BorderPane();
         
-        //Create buttons 'Add Book', 'Search Books' and 'Remove Book' at bottom
+        //Create buttons 'Add Album', 'Search Albums' and 'View All' at bottom
         Button addAlbumButton = new Button("Add Album");
         addAlbumButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                Optional<QueryInfo> result
-                        = queryDialog.showAndWait();
+                Optional<AddInfo> result
+                        = addDialog.showAndWait();
                 if (result.isPresent()) {
-                    con.handleAddAlbumEvent(result.get().getUserInput());
-                    queryDialog.clearField();
+                    AddInfo info = result.get();
+                    con.handleAddAlbumEvent(info.getTitle(), info.getArtists(), 
+                            info.getReleaseDate(), info.getNrOfSongs(), info.getLength(), info.getGenres());
+                    addDialog.clearFields();
                 }
 
             }
@@ -76,8 +80,9 @@ public class View {
                 if (result.isPresent()) {
                     QueryInfo qi = result.get();
                     String userInput = qi.getUserInput();
-                    con.handleQueryEvent(userInput); //try-catch här för om inget resultat?
-                    queryDialog.clearField();
+                    String searchItem = qi.getSearchItem();
+                    con.handleQueryEvent(searchItem, userInput); //try-catch här för om inget resultat?
+                    queryDialog.clearFields();
                 }
             }
         });
@@ -90,10 +95,7 @@ public class View {
                 //updateTextArea(cob.getBooks()); ?
             }
         });
-        
-        //Create FileChooser for 'Open File' and 'Save File' sub menus
-        FileChooser fileChooser = new FileChooser();
-        
+               
         //Create menu option 'File' and sub menus 'Open File', 'Save File'
         //and 'Exit'
         Menu fileMenu = new Menu("File");

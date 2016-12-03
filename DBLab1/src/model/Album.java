@@ -18,6 +18,7 @@ public class Album {
     public Album (String title) { //Just for testing
         this.title = title;
     }
+    
     public Album (ArrayList<String> genres, String title, ArrayList<Artist> artists, 
             String releaseDate, String length, int numberOfSongs) {
                 this.genres = genres;

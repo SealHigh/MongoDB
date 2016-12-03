@@ -5,6 +5,7 @@ import model.Album;
 import model.AlbumCollection;
 
 import java.util.Optional;
+import javafx.scene.control.Alert;
 
 
 public class Controller {
@@ -17,11 +18,14 @@ public class Controller {
         this.view = view;
     }
     
-    public void handleQueryEvent(String query) {
-        
+    public void handleQueryEvent(String searchItem, String userInput) {
+        String message = searchItem + " " + userInput;
+        Alert alert = new Alert(Alert.AlertType.WARNING, message);
+        alert.showAndWait();
     }
-    public void handleAddAlbumEvent(String Name) {
-        ac.addAlbum(new Album(Name));
+    public void handleAddAlbumEvent(String title, String artists, String releaseDate, 
+            String nrOfSongs, String length, String genres) {
+        //ac.addAlbum(new Album(Name)); //INte klar - fortsätt!!
         view.updateTextArea(ac.getCurrentAlbums());
 
     }
