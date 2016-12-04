@@ -26,38 +26,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
 
-        //Setup connection to database, not sure if it should be done here
-        Connection connection = null;
-        try {
-            connection =  ConnectionConfiguration.getConnection();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-
-        }
-
-
-
-        // Some hard coded values for testing ///////////
-        ArrayList<String> genres = new ArrayList<>();
-        genres.add("Rock");
-        genres.add("Pop");
-        Artist a1 = new Artist("Sting", "Brittish");
-        Artist a2 = new Artist("Prince", "American");
-        ArrayList<Artist> artists = new ArrayList<>();
-        artists.add(a1);
-        artists.add(a2);
-
-        Album test1 = new Album(1, "The Score", artists,genres,
-                "1990-08-12", "58", 12);
-        test1.setAlbumID(1538);
-        ArrayList<Album> albums = new ArrayList<>();
-        albums.add(test1);
-        ////////////////////////////////////////////
-
-        AlbumCollection ac = new AlbumCollection(connection);
-
+        AlbumCollection ac = new AlbumCollection();
         View view = new View(ac, primaryStage);
         primaryStage.setTitle("Album Collection");
 

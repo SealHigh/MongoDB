@@ -21,6 +21,11 @@ public class Controller {
         this.view = view;
     }
 
+    public void handleDeleteAlbumEvent(Album selectedAlbum) {
+        ac.deleteRecord(selectedAlbum);
+        view.updateTextArea(ac.getAllRecords());
+    }
+
     public void handleGetAllAlbumsEvent() {
         view.updateTextArea(ac.getAllRecords());
     }
@@ -32,7 +37,7 @@ public class Controller {
     }
     
     public void handleAddAlbumEvent(String title, String artists, String releaseDate, 
-            String nrOfSongs, String length, String genres) {
+            String nrOfSongs, String length, String genres) throws  NumberFormatException{
         //ac.addAlbum(new Album(Name)); //INte klar - fortsätt!!
 
         //This is temporary for a quick test
@@ -43,7 +48,7 @@ public class Controller {
         artist.add(a1);
         /////////////////////////////////////////////
 
-        ac.addRecord(new Album(genre,title,artist,releaseDate,length,Integer.parseInt(nrOfSongs))); //This adds it directly to the database
+        ac.insertRecord(new Album(genre,title,artist,releaseDate,length,Integer.parseInt(nrOfSongs))); //This adds it directly to the database
         view.updateTextArea(ac.getAllRecords());
 
     }

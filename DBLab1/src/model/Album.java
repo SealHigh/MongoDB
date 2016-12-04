@@ -11,6 +11,7 @@ public class Album {
     private String title;   
     private String releaseDate;
     private String length;
+    private int  rating = 0;
     private int numberOfSongs;
     private String genreAsString; //Only to feed cell value factory in table view
     private String artistAsString; //Only to feed cell value factory in table view
@@ -20,7 +21,7 @@ public class Album {
         this.title = title;
     }
     public Album (int albumID, String title, ArrayList<Artist> artists, ArrayList<String> genres,
-                  String releaseDate, String length, int numberOfSongs) {
+                  String releaseDate, String length, int numberOfSongs, int rating) {
         this.albumID = albumID;
         this.genres = genres;
         this.title = title;
@@ -28,6 +29,7 @@ public class Album {
         this.releaseDate = releaseDate;
         this.length = length;
         this.numberOfSongs = numberOfSongs;
+        this.rating =rating;
         this.artistAsString = artistToString();
         this.genreAsString = genreToString();
         reviews = new ArrayList<>();
@@ -47,13 +49,7 @@ public class Album {
     
     public float getRating () {
         
-        int total = 0;
-        
-        for (Review review : getReviews()) {
-            total += review.getRating();
-        }
-        
-        return ((float)total / getReviews().size());
+        return rating;
     }
 
     /**
