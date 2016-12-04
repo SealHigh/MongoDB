@@ -257,7 +257,7 @@ public class View {
         
         mainTable.setItems(albums);
         mainTable.getColumns().addAll(titleCol, artistCol, releaseDateCol, 
-                genreCol, lengthCol, nrOfSongsCol, nrOfReviewsCol);
+                genreCol, lengthCol, nrOfSongsCol, nrOfReviewsCol, ratingCol);
         
         //Set TextArea to center of BorderPane        
         //border.setCenter(centerText);
