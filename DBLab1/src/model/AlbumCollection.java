@@ -21,7 +21,7 @@ public class AlbumCollection implements DBQueries {
             ArrayList<String> genres = getGenres(album.getInt("albumId"));
 
             tempAlbum = new Album(album.getInt("albumId"), album.getString("title"), artists, genres,
-                    album.getString("releaseDate"),  album.getString("lengthMinutes"),  album.getInt("nrOfSongs"));
+                    album.getString("releaseDate"),  album.getString("lengthMinutes"),  album.getInt("nrOfSongs"), getAlbumRating(album.getInt("albumId")));
         }
         catch (Exception e){
 
@@ -52,7 +52,36 @@ public class AlbumCollection implements DBQueries {
         }
     }
 
+    @Override
+    public int getAlbumRating(int albumId){
+        int rating= 0;
+        ResultSet rs = null;
+        Statement stmt = null;
+        Connection conn = null;
+        try {
+            conn =  ConnectionConfiguration.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("select AVG(rating) from t_rating where albumId = '"+ albumId +"'");
 
+            if(rs.next())
+                rating = rs.getInt("AVG(rating)");
+
+        }
+        catch (Exception e){
+
+        }
+        finally {
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+            try { if (conn != null) conn.close(); } catch (Exception e) {}
+        }
+        return rating;
+    }
+
+    @Override
+    public void rateAlbum(Object o){
+
+    }
 
     @Override
     public  ArrayList<String> getGenres(int albumID){

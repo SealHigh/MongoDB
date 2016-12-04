@@ -23,6 +23,10 @@ public interface DBQueries {
 
     void deleteRecord(Object o);
 
+    void rateAlbum(Object o);
+
+    int getAlbumRating(int albumId);
+
     ArrayList<Artist> getArtists(int albumID);
 
     ArrayList<String> getGenres(int albumID);

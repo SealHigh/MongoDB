@@ -102,6 +102,15 @@ public class View {
                 con.handleDeleteAlbumEvent(slectedAlbum);
             }
         });
+
+        Button rateButton = new Button("Rate");
+        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
+                con.handleDeleteAlbumEvent(slectedAlbum);
+            }
+        });
                
         //Create menu option 'File' and sub menus 'Open File', 'Save File'
         //and 'Exit'
@@ -146,7 +155,7 @@ public class View {
         //Create FlowPane to hold buttons at bottom and add buttons
         FlowPane bottomPane = new FlowPane();
         bottomPane.setHgap(20);
-        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton, deleteButton);
+        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton,rateButton, deleteButton);
         bottomPane.setAlignment(Pos.CENTER);
         bottomPane.setPrefHeight(50);
         
@@ -192,10 +201,16 @@ public class View {
         nrOfSongsCol.setCellValueFactory(
             new PropertyValueFactory<>("numberOfSongs")
         );
+
+        TableColumn ratingCol = new TableColumn("Rating");
+        ratingCol.setMinWidth(100);
+        ratingCol.setCellValueFactory(
+                new PropertyValueFactory<>("rating")
+        );
         
-        titleCol.prefWidthProperty().bind(mainTable.widthProperty().divide(4.02)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
+        titleCol.prefWidthProperty().bind(mainTable.widthProperty().divide(5.02)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
         titleCol.setStyle("-fx-alignment: CENTER;");
-        artistCol.prefWidthProperty().bind(mainTable.widthProperty().divide(4.02));
+        artistCol.prefWidthProperty().bind(mainTable.widthProperty().divide(5.02));
         artistCol.setStyle("-fx-alignment: CENTER;");
         releaseDateCol.prefWidthProperty().bind(mainTable.widthProperty().divide(10.03));
         releaseDateCol.setStyle("-fx-alignment: CENTER;");
@@ -205,9 +220,11 @@ public class View {
         lengthCol.setStyle("-fx-alignment: CENTER;");
         nrOfSongsCol.prefWidthProperty().bind(mainTable.widthProperty().divide(10.03));
         nrOfSongsCol.setStyle("-fx-alignment: CENTER;");
+        ratingCol.prefWidthProperty().bind(mainTable.widthProperty().divide(10.03));
+        ratingCol.setStyle("-fx-alignment: CENTER;");
 
         mainTable.setItems(albums);
-        mainTable.getColumns().addAll(titleCol, artistCol, releaseDateCol, genreCol, lengthCol, nrOfSongsCol);
+        mainTable.getColumns().addAll(titleCol, artistCol, releaseDateCol, genreCol, lengthCol, nrOfSongsCol,ratingCol);
         /*******************************************/
         
         //Set TextArea to center of BorderPane        
