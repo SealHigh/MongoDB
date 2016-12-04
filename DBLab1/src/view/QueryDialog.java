@@ -14,29 +14,77 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
+import model.SearchOptions;
 
 
 public class QueryDialog extends Dialog<QueryInfo> {
     
     private TextField userInput;
-    private ComboBox searchComboBox;
+    private ComboBox<SearchOptions> searchComboBox;
 
     QueryDialog() {
         super(); // super constructor, modal by default
 
         userInput = new TextField();
         
-        ObservableList<String> options = 
-        FXCollections.observableArrayList(
-            "Album",
-            "Artist",
-            "Genre"
-        );
-        searchComboBox = new ComboBox(options);
-        searchComboBox.setValue("Album"); //Preset Album option
+        /****** Not fully functioning ************
+        class SearchOption {
+            private SearchOptions enumOption;
+            private String stringOption;
+        
+            public SearchOption(SearchOptions enumOption) {
+                this.enumOption = enumOption;
+                this.stringOption = enumOption.toString();
+                stringOption = stringOption.substring(0, 1).toUpperCase() + stringOption.substring(1);
+            }
+        
+            public SearchOptions getSearchOption () {
+                return enumOption;
+            }
+        
+            public String getStringOption () {
+                return stringOption;
+            }
+        }
+        
+        ObservableList<SearchOption> optionList = FXCollections.observableArrayList();
+        for (SearchOptions so : SearchOptions.values()) {
+            optionList.add(new SearchOption (so));
+        }
+        
+        final ComboBox comboBox = new ComboBox(optionList);
+        comboBox.getSelectionModel().selectFirst(); //select the first element
+         
+        comboBox.setCellFactory(new Callback<ListView<SearchOption>,ListCell<SearchOption>>(){
+ 
+            @Override
+            public ListCell<SearchOption> call(ListView<SearchOption> p) {
+                 
+                final ListCell<SearchOption> cell = new ListCell<SearchOption>(){
+ 
+                    @Override
+                    protected void updateItem(SearchOption s, boolean bln) {
+                        super.updateItem(s, bln);
+                         
+                        if(s != null){
+                            setText(s.stringOption);
+                        }else{
+                            setText(null);
+                        }
+                    }
+                };    
+                return cell;
+            }
+        });
+        */
+        searchComboBox = new ComboBox<>();
+        searchComboBox.getItems().setAll(SearchOptions.values()); //Just ugly lowercase so far!
+        searchComboBox.setValue(SearchOptions.ALBUM); //Preset Album option
         
         GridPane grid = new GridPane();
         grid.setVgap(5);
@@ -58,7 +106,7 @@ public class QueryDialog extends Dialog<QueryInfo> {
                 if (b == buttonTypeOk) {
 
                     QueryInfo qInfo = new QueryInfo(
-                            userInput.getText(), (String) searchComboBox.getValue());
+                            userInput.getText(), searchComboBox.getValue());
                     QueryDialog.this.clearFields();
                     return qInfo;
                 }
@@ -87,7 +135,7 @@ public class QueryDialog extends Dialog<QueryInfo> {
 
     public void clearFields() {
         userInput.setText("");
-        searchComboBox.setValue("Album");
+        searchComboBox.setValue(SearchOptions.TITLE);
     }
 
     void showAlert(String message) {
@@ -100,18 +148,18 @@ public class QueryDialog extends Dialog<QueryInfo> {
 class QueryInfo {
 
     private final String userInput;
-    private final String searchItem;
+    private final SearchOptions searchOption;
 
-    QueryInfo(String userInput, String searchItem) {
+    QueryInfo(String userInput, SearchOptions searchOption) {
         this.userInput = userInput;
-        this.searchItem = searchItem;
+        this.searchOption = searchOption;
     }
 
     String getUserInput() {
         return userInput;
     }
     
-    String getSearchItem() {
-        return searchItem;
+    SearchOptions getSearchOption() {
+        return searchOption;
     }
 }
