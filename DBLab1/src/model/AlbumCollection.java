@@ -114,7 +114,7 @@ public class AlbumCollection implements DBQueries {
         ArrayList<Album> albums = new ArrayList<>();
         try {
             Statement stmt = connection.createStatement();
-            ResultSet album = stmt.executeQuery("SELECT * FROM t_album WHERE " + option.toString() +" = '" + query+ "'");
+            ResultSet album = stmt.executeQuery("SELECT * FROM t_album WHERE " + option.toString() +" LIKE '%" + query+ "%'");
             while(album.next()){
                 albums.add(createAlbumFromResultSet(album));
             }

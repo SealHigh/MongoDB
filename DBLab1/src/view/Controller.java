@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javafx.scene.control.Alert;
 import model.Artist;
+import model.SearchOptions;
 
 
 public class Controller {
@@ -21,9 +22,7 @@ public class Controller {
     }
     
     public void handleQueryEvent(String searchItem, String userInput) {
-        String message = searchItem + " " + userInput;
-        Alert alert = new Alert(Alert.AlertType.WARNING, message);
-        alert.showAndWait();
+        view.updateTextArea(ac.searchRecord(SearchOptions.TITLE, userInput)); //Searchoption.TITLE is hardcoded temporary since i coded using Enum so gotta change one
     }
     public void handleAddAlbumEvent(String title, String artists, String releaseDate, 
             String nrOfSongs, String length, String genres) {
