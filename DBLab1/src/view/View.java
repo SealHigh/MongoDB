@@ -83,7 +83,7 @@ public class View {
 
             @Override
             public void handle(ActionEvent event) {
-                //updateTextArea(cob.getBooks()); ?
+                con.handleGetAllAlbumsEvent();
             }
         });
                

@@ -20,7 +20,11 @@ public class Controller {
         this.ac = ac;
         this.view = view;
     }
-    
+
+    public void handleGetAllAlbumsEvent() {
+        view.updateTextArea(ac.getAllRecords());
+    }
+
     public void handleQueryEvent(String searchItem, String userInput) {
         view.updateTextArea(ac.searchRecord(SearchOptions.TITLE, userInput)); //Searchoption.TITLE is hardcoded temporary since i coded using Enum so gotta change one
     }
