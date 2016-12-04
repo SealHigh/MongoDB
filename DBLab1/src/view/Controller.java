@@ -25,9 +25,12 @@ public class Controller {
         view.updateTextArea(ac.getAllRecords());
     }
 
-    public void handleQueryEvent(String searchItem, String userInput) {
+    public void handleQueryEvent(SearchOptions searchOption, String userInput) {
         view.updateTextArea(ac.searchRecord(SearchOptions.TITLE, userInput)); //Searchoption.TITLE is hardcoded temporary since i coded using Enum so gotta change one
+        Alert alert = new Alert(Alert.AlertType.WARNING, searchOption.toString());
+        alert.showAndWait();
     }
+    
     public void handleAddAlbumEvent(String title, String artists, String releaseDate, 
             String nrOfSongs, String length, String genres) {
         //ac.addAlbum(new Album(Name)); //INte klar - fortsätt!!
