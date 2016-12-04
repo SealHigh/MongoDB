@@ -13,9 +13,33 @@ public interface DBQueries {
      * @param <T>
      */
     <T> void updateDB(ArrayList<T> arrayList);
-    ArrayList<Album> getCurrentAlbums();
+
+    /**
+     * Retrivies all records in the database
+     * @param <T>
+     * @return a list of all the records
+     */
+    <T> ArrayList<T> getAllRecords();
+
+    /**
+     * Adds a record of the object to the database
+     * @param o
+     */
     void addRecord(Object o);
+
+    /**
+     * Deletes given record from the database
+     * @param o
+     */
     void deleteRecord(Object o);
-    ArrayList<Album> searchRecord(SearchOptions option, String query);
+
+    /**
+     * Searches through a table records with given value
+     * @param option the column to search in
+     * @param query the value to search for
+     * @return a list of the records with the value
+     */
+    <T> ArrayList<T> searchRecord(SearchOptions option, String query);
+
     
 }

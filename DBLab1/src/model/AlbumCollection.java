@@ -34,6 +34,7 @@ public class AlbumCollection implements DBQueries {
         
     }
 
+
     private ArrayList<String> getGenres(int albumID){
         ArrayList<String> genres = new ArrayList<>();
         try {
@@ -76,32 +77,52 @@ public class AlbumCollection implements DBQueries {
         ArrayList<Album> queriedAlbumsCopy = new ArrayList<>(queriedAlbums);
         return queriedAlbumsCopy;        
     }*/
-    
+
+    private Album createAlbumFromResultSet(ResultSet album){
+        Album tempAlbum = null;
+        try {
+            ArrayList<Artist> artists = getArtists(album.getInt("albumId"));
+            ArrayList<String> genres = getGenres(album.getInt("albumId"));
+
+            tempAlbum = new Album(album.getInt("albumId"), album.getString("title"), artists, genres,
+                    album.getString("releaseDate"),  album.getString("lengthMinutes"),  album.getInt("nrOfSongs"));
+        }
+        catch (Exception e){
+
+        }
+        return tempAlbum;
+
+    }
     @Override
-    public ArrayList<Album> getCurrentAlbums() {
+    public ArrayList<Album> getAllRecords() {
         ArrayList<Album> albums = new ArrayList<>();
         try {
             Statement stmt = connection.createStatement();
-            Statement stmt2 = connection.createStatement();
             ResultSet album = stmt.executeQuery("SELECT * FROM t_album");
-
             while(album.next()){
-                ArrayList<Artist> artists = getArtists(album.getInt("albumId"));
-                ArrayList<String> genres = getGenres(album.getInt("albumId"));
-
-                Album temp = new Album(album.getInt("albumId"), album.getString("title"), artists, genres,
-                        album.getString("releaseDate"),  album.getString("lengthMinutes"),  album.getInt("nrOfSongs"));
-                albums.add(temp);
+                albums.add(createAlbumFromResultSet(album));
             }
         }catch (Exception e){
             e.printStackTrace();
-        }finally {
-
         }
         ArrayList<Album> queriedAlbumsCopy = albums;
         return queriedAlbumsCopy;  
     }
 
+    @Override
+    public ArrayList<Album> searchRecord(SearchOptions option, String query) {
+        ArrayList<Album> albums = new ArrayList<>();
+        try {
+            Statement stmt = connection.createStatement();
+            ResultSet album = stmt.executeQuery("SELECT * FROM t_album WHERE " + option.toString() +" = '" + query+ "'");
+            while(album.next()){
+                albums.add(createAlbumFromResultSet(album));
+            }
+        } catch (Exception e) {
+
+        }
+        return albums;
+    }
     @Override
     public void addRecord(Object o) {
         try {
@@ -127,22 +148,7 @@ public class AlbumCollection implements DBQueries {
         }
     }
 
-    @Override
-    public ArrayList<Album> searchRecord(SearchOptions option, String query) {
-        ArrayList<Album> albums = new ArrayList<>();
-        try {
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT title FROM t_album WHERE " + option.toString() +" = '" + query+ "'");
-            queriedAlbums.clear();
-            while (rs.next()) {
-                System.out.println(rs.getString("title"));
-            }
 
-        } catch (Exception e) {
-
-        }
-        return albums;
-    }
 
     @Override
     public ArrayList<Album> getSelection(String query) {
@@ -153,7 +159,8 @@ public class AlbumCollection implements DBQueries {
         
         return albumsInDB;
     }
-    
+
+
     @Override
     public <Album> void updateDB(ArrayList<Album> listOfAlbums) {
 

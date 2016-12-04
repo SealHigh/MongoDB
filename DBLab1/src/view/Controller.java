@@ -5,7 +5,7 @@ import model.Album;
 import model.AlbumCollection;
 
 import java.util.ArrayList;
-import java.util.Optional;
+
 import javafx.scene.control.Alert;
 import model.Artist;
 
@@ -38,7 +38,7 @@ public class Controller {
         /////////////////////////////////////////////
 
         ac.addRecord(new Album(genre,title,artist,releaseDate,length,Integer.parseInt(nrOfSongs))); //This adds it directly to the database
-        view.updateTextArea(ac.getCurrentAlbums());
+        view.updateTextArea(ac.getAllRecords());
 
     }
 

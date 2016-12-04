@@ -1,13 +1,10 @@
 
 package view;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.property.ReadOnlyStringWrapper;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,14 +18,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Pair;
-import model.Album;
-import model.User;
-import model.AlbumCollection;
-import model.Review;
-import model.Artist;
+import model.*;
 
 
 public class View {
@@ -148,7 +139,7 @@ public class View {
         
         //Create TableView
         mainTable = new TableView<>();
-        ObservableList<Album> albums = FXCollections.observableArrayList(ac.getCurrentAlbums());       
+        ObservableList<Album> albums = FXCollections.observableArrayList(ac.getAllRecords());
         
         TableColumn titleCol = new TableColumn("Title");
         titleCol.setMinWidth(100);
@@ -210,7 +201,7 @@ public class View {
         //Add BorderPane to scene
         scene = new Scene(border, 1100, 600);
 
-        // updateTextArea(ac.getCurrentAlbums()); den gör inget
+        // updateTextArea(ac.getAllRecords()); den gör inget
     }
 
     public void updateTextArea(ArrayList<Album> albumList) {
