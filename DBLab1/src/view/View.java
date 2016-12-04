@@ -209,8 +209,8 @@ public class View {
         
         //Add BorderPane to scene
         scene = new Scene(border, 1100, 600);
-        
-        updateTextArea(ac.getCurrentAlbums());
+
+        // updateTextArea(ac.getCurrentAlbums()); den gör inget
     }
 
     public void updateTextArea(ArrayList<Album> albumList) {

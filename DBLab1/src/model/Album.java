@@ -19,8 +19,19 @@ public class Album {
     public Album (String title) { //Just for testing
         this.title = title;
     }
-    
-    public Album (ArrayList<String> genres, String title, ArrayList<Artist> artists, 
+    public Album (int albumID, String title, ArrayList<Artist> artists, ArrayList<String> genres,
+                  String releaseDate, String length, int numberOfSongs) {
+        this.albumID = albumID;
+        this.genres = genres;
+        this.title = title;
+        this.artists = artists;
+        this.releaseDate = releaseDate;
+        this.length = length;
+        this.numberOfSongs = numberOfSongs;
+        this.artistAsString = artistToString();
+        this.genreAsString = genreToString();
+    }
+    public Album (ArrayList<String> genres, String title, ArrayList<Artist> artists,
             String releaseDate, String length, int numberOfSongs) {
                 this.genres = genres;
                 this.title = title;

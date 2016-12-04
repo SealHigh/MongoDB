@@ -16,5 +16,6 @@ public interface DBQueries {
     ArrayList<Album> getCurrentAlbums();
     void addRecord(Object o);
     void deleteRecord(Object o);
+    ArrayList<Album> searchRecord(SearchOptions option, String query);
     
 }

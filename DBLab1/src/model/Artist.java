@@ -7,7 +7,7 @@ public class Artist {
     private String name;
     private String nationality;
     
-    public Artist (String name, String Nationality) {
+    public Artist (String name, String nationality) {
         
         this.name = name;
         this.nationality = nationality;

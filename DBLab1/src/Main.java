@@ -1,6 +1,6 @@
 
 
-import model.ConnectionConfiguration;
+import model.*;
 import view.View;
 import java.io.IOException;
 import java.sql.Connection;
@@ -19,9 +19,6 @@ import static javafx.application.Application.launch;
 //import javafx.scene.text.Text;
 import javafx.stage.Stage;
 //import javafx.util.Duration;
-import model.AlbumCollection;
-import model.Album;
-import model.Artist;
 
 
 public class Main extends Application {
@@ -52,18 +49,15 @@ public class Main extends Application {
         artists.add(a1);
         artists.add(a2);
 
-        Album test1 = new Album(genres, "The Score", artists,
+        Album test1 = new Album(1, "The Score", artists,genres,
                 "1990-08-12", "58", 12);
         test1.setAlbumID(1538);
-        Album test2 = new Album(genres, "The Heist", artists,
-                "2003-01-28", "33", 5);
         ArrayList<Album> albums = new ArrayList<>();
         albums.add(test1);
-        albums.add(test2);
         ////////////////////////////////////////////
 
         AlbumCollection ac = new AlbumCollection(connection);
-        ac.deleteRecord(test1);
+
         View view = new View(ac, primaryStage);
         primaryStage.setTitle("Album Collection");
 

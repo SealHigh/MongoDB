@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import model.Album;
 
 
 public class AlbumCollection implements DBQueries {
@@ -35,9 +34,42 @@ public class AlbumCollection implements DBQueries {
         
     }
 
+    private ArrayList<String> getGenres(int albumID){
+        ArrayList<String> genres = new ArrayList<>();
+        try {
+            Statement stmt = connection.createStatement();
+            ResultSet genre = stmt.executeQuery("SELECT genre FROM t_genre WHERE albumID = '"+ albumID +"'");
+            while (genre.next()) {
+                genres.add(genre.getString("genre"));
+            }
+        }
+        catch (Exception e){
+
+        }
+        return genres;
+    }
+
+    private ArrayList<Artist> getArtists(int albumID){
+        ArrayList<Artist> artists = new ArrayList<>();
+        try {
+            Statement stmt = connection.createStatement();
+            ResultSet artist = stmt.executeQuery("SELECT artistName, nationality FROM t_artist WHERE artistID IN " +
+                    "(SELECT  artistID FROM ct_album_artist WHERE albumID ='" + albumID +"')");
+            while (artist.next()) {
+                Artist temp = new Artist(artist.getString("artistName"), artist.getString("nationality"));
+                artists.add(temp);
+            }
+        }
+        catch (Exception e){
+
+        }
+        return artists;
+    }
+
     public void addAlbum(Album album){
         queriedAlbums.add(album);
     }
+
     
     /*public ArrayList<Album> getQueriedAlbums() {
         
@@ -50,21 +82,15 @@ public class AlbumCollection implements DBQueries {
         ArrayList<Album> albums = new ArrayList<>();
         try {
             Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT title, releaseDate, lengthMinutes, nrOfSongs FROM t_album");
+            Statement stmt2 = connection.createStatement();
+            ResultSet album = stmt.executeQuery("SELECT * FROM t_album");
 
-            //Temporary, this will come from database later
-            ArrayList<String> genres = new ArrayList<>();
-            genres.add("Rock");
-            genres.add("Pop");
-            Artist a1 = new Artist("Sting", "Brittish");
-            Artist a2 = new Artist("Prince", "American");
-            ArrayList<Artist> artists = new ArrayList<>();
-            artists.add(a1);
-            artists.add(a2);
+            while(album.next()){
+                ArrayList<Artist> artists = getArtists(album.getInt("albumId"));
+                ArrayList<String> genres = getGenres(album.getInt("albumId"));
 
-            while(rs.next()){
-                Album temp = new Album(genres, rs.getString("title"), artists,
-                        rs.getString("releaseDate"),  rs.getString("lengthMinutes"),  rs.getInt("nrOfSongs"));
+                Album temp = new Album(album.getInt("albumId"), album.getString("title"), artists, genres,
+                        album.getString("releaseDate"),  album.getString("lengthMinutes"),  album.getInt("nrOfSongs"));
                 albums.add(temp);
             }
         }catch (Exception e){
@@ -100,6 +126,24 @@ public class AlbumCollection implements DBQueries {
 
         }
     }
+
+    @Override
+    public ArrayList<Album> searchRecord(SearchOptions option, String query) {
+        ArrayList<Album> albums = new ArrayList<>();
+        try {
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT title FROM t_album WHERE " + option.toString() +" = '" + query+ "'");
+            queriedAlbums.clear();
+            while (rs.next()) {
+                System.out.println(rs.getString("title"));
+            }
+
+        } catch (Exception e) {
+
+        }
+        return albums;
+    }
+
     @Override
     public ArrayList<Album> getSelection(String query) {
         
