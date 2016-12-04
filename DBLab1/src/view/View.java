@@ -4,6 +4,7 @@ package view;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
+import javafx.beans.property.ReadOnlyStringWrapper;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,7 +31,9 @@ public class View {
     private Stage primaryStage;
     private Scene scene;
     private TableView<Album> mainTable;
+    private TableView<Review> reviewTable;
     private BorderPane border;
+    private Scene singleAlbumScene;
     
     public View(AlbumCollection ac, Stage primaryStage) throws IOException, ClassNotFoundException {
         
@@ -42,6 +45,8 @@ public class View {
         //sbd = new SearchBooksDialog(primaryStage);
         
         border = new BorderPane();
+        
+        initReviewTableView();
         
         //Create buttons 'Add Album', 'Search Albums' and 'View All' at bottom
         Button addAlbumButton = new Button("Add Album");
@@ -71,8 +76,8 @@ public class View {
                 if (result.isPresent()) {
                     QueryInfo qi = result.get();
                     String userInput = qi.getUserInput();
-                    String searchItem = qi.getSearchItem();
-                    con.handleQueryEvent(searchItem, userInput); //try-catch här för om inget resultat?
+                    SearchOptions searchOption = qi.getSearchOption();
+                    con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
                     queryDialog.clearFields();
                 }
             }
@@ -177,6 +182,15 @@ public class View {
             new PropertyValueFactory<>("numberOfSongs")
         );
         
+        TableColumn<Album, String > nrOfReviewsCol = new TableColumn<>("Nr Of Reviews");
+        nrOfReviewsCol.setMinWidth(100);
+        nrOfReviewsCol.setCellValueFactory(cellData -> {
+            ArrayList<Review> reviews = cellData.getValue().getReviews();
+            String nrOfReviewsString = Integer.toString(reviews.size());
+
+            return new ReadOnlyStringWrapper(nrOfReviewsString);
+        });
+        
         titleCol.prefWidthProperty().bind(mainTable.widthProperty().divide(4.02)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
         titleCol.setStyle("-fx-alignment: CENTER;");
         artistCol.prefWidthProperty().bind(mainTable.widthProperty().divide(4.02));
@@ -189,10 +203,28 @@ public class View {
         lengthCol.setStyle("-fx-alignment: CENTER;");
         nrOfSongsCol.prefWidthProperty().bind(mainTable.widthProperty().divide(10.03));
         nrOfSongsCol.setStyle("-fx-alignment: CENTER;");
-
+        nrOfReviewsCol.prefWidthProperty().bind(mainTable.widthProperty().divide(10.03));
+        nrOfReviewsCol.setStyle("-fx-alignment: CENTER;");
+        
+        //Makes rows clickable
+        mainTable.setRowFactory( tv -> {
+            TableRow<Album> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty()) {
+                    Album rowData = row.getItem();
+                    if(rowData.getReviews() != null) {
+                        ArrayList<Review> reviewData = rowData.getReviews();
+                        reviewTable.setItems(FXCollections.observableArrayList(reviewData));
+                        border.setCenter(reviewTable);
+                    }
+                }
+            });
+            return row ;
+        });
+        
         mainTable.setItems(albums);
-        mainTable.getColumns().addAll(titleCol, artistCol, releaseDateCol, genreCol, lengthCol, nrOfSongsCol);
-        /*******************************************/
+        mainTable.getColumns().addAll(titleCol, artistCol, releaseDateCol, 
+                genreCol, lengthCol, nrOfSongsCol, nrOfReviewsCol);
         
         //Set TextArea to center of BorderPane        
         //border.setCenter(centerText);
@@ -201,7 +233,10 @@ public class View {
         //Add BorderPane to scene
         scene = new Scene(border, 1100, 600);
 
-        // updateTextArea(ac.getAllRecords()); den gör inget
+        updateTextArea(ac.getAllRecords()); //den gör inget - den laddar alla 
+                                            //album i db vid start och annars
+                                            //byter den border till att text där
+                                            //det står att den är tom
     }
 
     public void updateTextArea(ArrayList<Album> albumList) {
@@ -221,6 +256,50 @@ public class View {
             getMainTable().setItems(FXCollections.observableArrayList(albumList));
             border.setCenter(mainTable);
         }
+    }
+    
+    public void initReviewTableView() {
+
+        //Create TableView
+        reviewTable = new TableView<>();
+        ArrayList<Review> emptyList = new ArrayList<>();
+        ObservableList<Review> reviews = FXCollections.observableArrayList(emptyList);
+        
+        TableColumn<Review, String > userCol = new TableColumn<>("User");
+        userCol.setMinWidth(100);
+        userCol.setCellValueFactory(cellData -> {
+            User user = cellData.getValue().getUser();
+            String userAsString = user.getUserName();
+
+            return new ReadOnlyStringWrapper(userAsString);
+        });
+        
+        TableColumn ratingCol = new TableColumn("Rating");
+        ratingCol.setMinWidth(100);
+        ratingCol.setCellValueFactory(
+            new PropertyValueFactory<>("rating")
+        );       
+        
+        TableColumn commentCol = new TableColumn("Comment");
+        commentCol.setMinWidth(100);
+        commentCol.setCellValueFactory(
+            new PropertyValueFactory<>("comment")
+        );
+        
+        //3.03 needs to be changed 
+        userCol.prefWidthProperty().bind(reviewTable.widthProperty().divide(3.03)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
+        userCol.setStyle("-fx-alignment: CENTER;");
+        ratingCol.prefWidthProperty().bind(reviewTable.widthProperty().divide(3.03));
+        ratingCol.setStyle("-fx-alignment: CENTER;");
+        commentCol.prefWidthProperty().bind(reviewTable.widthProperty().divide(3.03));
+        commentCol.setStyle("-fx-alignment: CENTER;");
+        
+        reviewTable.setOnMouseClicked(event -> {
+                border.setCenter(mainTable);
+            });
+        
+        reviewTable.setItems(reviews);
+        reviewTable.getColumns().addAll(userCol, ratingCol, commentCol);
     }
 
     /**
