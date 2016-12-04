@@ -55,7 +55,7 @@ public class AddDialog extends Dialog<AddInfo> {
         this.getDialogPane().setContent(grid);
 
         ButtonType buttonTypeOk = new ButtonType(
-                "Search", ButtonBar.ButtonData.OK_DONE);
+                "Add", ButtonBar.ButtonData.OK_DONE);
         this.getDialogPane().getButtonTypes().add(buttonTypeOk);
         
         ButtonType buttonTypeCancel = new ButtonType(
