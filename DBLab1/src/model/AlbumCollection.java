@@ -105,6 +105,24 @@ public class AlbumCollection implements DBQueries {
         }catch (Exception e){
             e.printStackTrace();
         }
+        /********** FÖR TEST **************
+        ArrayList<String> genres = new ArrayList<>();
+        genres.add("Rock");
+        genres.add("Pop");
+        Artist a1 = new Artist("Sting", "Brittish");
+        Artist a2 = new Artist("Prince", "American");
+        ArrayList<Artist> artists = new ArrayList<>();
+        artists.add(a1);
+        artists.add(a2);
+
+        Album test1 = new Album(1, "The Score", artists,genres,
+                "1990-08-12", "58", 12);
+        test1.setAlbumID(1538);
+        User user1 = new User("Pelle"); 
+        Review testRev = new Review(3, "SKITBRA ALBUM!!!", test1, user1);
+        test1.addReview(testRev);
+        albums.add(test1);
+        **************************************/
         ArrayList<Album> queriedAlbumsCopy = albums;
         return queriedAlbumsCopy;  
     }
