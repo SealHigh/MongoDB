@@ -9,10 +9,11 @@ public class Review {
     private String comment;
     private Album album;
     
-    public Review (int rating, String comment, Album album) {
+    public Review (int rating, String comment, Album album, User user) {
         this.rating = rating;
         this.comment = comment;
         this.album = album;
+        this.user = user;
     }
 
     /**
