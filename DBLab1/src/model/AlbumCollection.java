@@ -9,8 +9,10 @@ import java.util.ArrayList;
 
 public class AlbumCollection implements DBQueries {
 
-    
-    public AlbumCollection () {}
+    private Connection conn = null;
+    public AlbumCollection () {
+        conn =  ConnectionConfiguration.getConnection();
+    }
 
 
 
@@ -59,7 +61,6 @@ public class AlbumCollection implements DBQueries {
         Statement stmt = null;
         Connection conn = null;
         try {
-            conn =  ConnectionConfiguration.getConnection();
             stmt = conn.createStatement();
             rs = stmt.executeQuery("select AVG(rating) from t_rating where albumId = '"+ albumId +"'");
 
@@ -88,9 +89,7 @@ public class AlbumCollection implements DBQueries {
         ArrayList<String> genres = new ArrayList<>();
         ResultSet genre = null;
         Statement stmt = null;
-        Connection conn = null;
         try {
-            conn =  ConnectionConfiguration.getConnection();
             stmt = conn.createStatement();
             genre = stmt.executeQuery("SELECT genre FROM t_genre WHERE albumID = '"+ albumID +"'");
             while (genre.next()) {
@@ -102,7 +101,6 @@ public class AlbumCollection implements DBQueries {
         finally {
             try { if (genre != null) genre.close(); } catch (Exception e) {}
             try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
         }
         return genres;
     }
@@ -112,9 +110,7 @@ public class AlbumCollection implements DBQueries {
         ArrayList<Artist> artists = new ArrayList<>();
         ResultSet artist = null;
         Statement stmt = null;
-        Connection conn = null;
         try {
-            conn =  ConnectionConfiguration.getConnection();
             stmt = conn.createStatement();
             artist = stmt.executeQuery("SELECT artistName, nationality FROM t_artist WHERE artistID IN " +
                     "(SELECT  artistID FROM ct_album_artist WHERE albumID ='" + albumID +"')");
@@ -130,7 +126,6 @@ public class AlbumCollection implements DBQueries {
         finally {
             try { if (artist != null) artist.close(); } catch (Exception e) {}
             try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
         }
         return artists;
     }
@@ -140,9 +135,7 @@ public class AlbumCollection implements DBQueries {
     @Override
     public void updateDB(String statement){
         Statement stmt = null;
-        Connection conn = null;
         try {
-            conn =  ConnectionConfiguration.getConnection();
             stmt = conn.createStatement();
             stmt.executeUpdate(statement);
         }catch (Exception e){
@@ -150,7 +143,6 @@ public class AlbumCollection implements DBQueries {
         }
         finally {
             try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {};
         }
     }
 
@@ -159,9 +151,7 @@ public class AlbumCollection implements DBQueries {
         ArrayList<Album> albums = new ArrayList<>();
         ResultSet album = null;
         Statement stmt = null;
-        Connection conn = null;
         try {
-            conn =  ConnectionConfiguration.getConnection();
             stmt = conn.createStatement();
             album = stmt.executeQuery("SELECT * FROM t_album");
             while(album.next()){
@@ -173,7 +163,6 @@ public class AlbumCollection implements DBQueries {
         finally {
             try { if (album != null) album.close(); } catch (Exception e) {}
             try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
         }
         return albums;
     }
@@ -183,9 +172,7 @@ public class AlbumCollection implements DBQueries {
         ArrayList<Album> albums = new ArrayList<>();
         ResultSet album = null;
         Statement stmt = null;
-        Connection conn = null;
         try {
-            conn =  ConnectionConfiguration.getConnection();
             stmt = conn.createStatement();
             album = stmt.executeQuery("SELECT * FROM t_album WHERE " + option.toString() +" LIKE '%" + query+ "%'");
             while(album.next()){
@@ -196,7 +183,6 @@ public class AlbumCollection implements DBQueries {
         finally {
             try { if (album != null) album.close(); } catch (Exception e) {}
             try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
         }
         return albums;
     }
