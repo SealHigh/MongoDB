@@ -26,16 +26,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
 
-        //Setup connection to database, not sure if it should be done here
-        Connection connection = null;
-        try {
-            connection =  ConnectionConfiguration.getConnection();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-
-        }
 
 
 
@@ -56,7 +46,7 @@ public class Main extends Application {
         albums.add(test1);
         ////////////////////////////////////////////
 
-        AlbumCollection ac = new AlbumCollection(connection);
+        AlbumCollection ac = new AlbumCollection();
 
         View view = new View(ac, primaryStage);
         primaryStage.setTitle("Album Collection");

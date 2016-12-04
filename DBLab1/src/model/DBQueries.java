@@ -1,19 +1,17 @@
 package model;
 
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Observer;
 
 public interface DBQueries {
-    
-    <T> ArrayList<T> getSelection(String query);
 
-    /**
-     * Adds all albums in @param arrayList
-     * to the database
-     * @param <T>
-     */
-    <T> void updateDB(ArrayList<T> arrayList);
 
+    void updateDB(String statement);
     /**
      * Retrivies all records in the database
      * @param <T>
@@ -21,17 +19,13 @@ public interface DBQueries {
      */
     <T> ArrayList<T> getAllRecords();
 
-    /**
-     * Adds a record of the object to the database
-     * @param o
-     */
-    void addRecord(Object o);
+    void insertRecord(Object o);
 
-    /**
-     * Deletes given record from the database
-     * @param o
-     */
     void deleteRecord(Object o);
+
+    ArrayList<Artist> getArtists(int albumID);
+
+    ArrayList<String> getGenres(int albumID);
 
     /**
      * Searches through a table records with given value

@@ -21,6 +21,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.*;
 
+import javax.swing.*;
+
 
 public class View {
 
@@ -53,8 +55,13 @@ public class View {
                         = addDialog.showAndWait();
                 if (result.isPresent()) {
                     AddInfo info = result.get();
-                    con.handleAddAlbumEvent(info.getTitle(), info.getArtists(), 
-                            info.getReleaseDate(), info.getNrOfSongs(), info.getLength(), info.getGenres());
+                    try {
+                        con.handleAddAlbumEvent(info.getTitle(), info.getArtists(),
+                                info.getReleaseDate(), info.getNrOfSongs(), info.getLength(), info.getGenres());
+                    }
+                    catch (NumberFormatException e){
+                        //Error dialog here "Fill all fields"
+                    }
                     addDialog.clearFields();
                 }
 
@@ -84,6 +91,15 @@ public class View {
             @Override
             public void handle(ActionEvent event) {
                 con.handleGetAllAlbumsEvent();
+            }
+        });
+
+        Button deleteButton = new Button("Delete");
+        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
+                con.handleDeleteAlbumEvent(slectedAlbum);
             }
         });
                
@@ -130,7 +146,7 @@ public class View {
         //Create FlowPane to hold buttons at bottom and add buttons
         FlowPane bottomPane = new FlowPane();
         bottomPane.setHgap(20);
-        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton);
+        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton, deleteButton);
         bottomPane.setAlignment(Pos.CENTER);
         bottomPane.setPrefHeight(50);
         
