@@ -30,6 +30,7 @@ public class Album {
         this.numberOfSongs = numberOfSongs;
         this.artistAsString = artistToString();
         this.genreAsString = genreToString();
+        reviews = new ArrayList<>();
     }
     public Album (ArrayList<String> genres, String title, ArrayList<Artist> artists,
             String releaseDate, String length, int numberOfSongs) {
@@ -41,17 +42,18 @@ public class Album {
                 this.numberOfSongs = numberOfSongs;
                 this.artistAsString = artistToString();
                 this.genreAsString = genreToString();
+                reviews = new ArrayList<>();
     }
     
     public float getRating () {
         
         int total = 0;
         
-        for (Review review : reviews) {
+        for (Review review : getReviews()) {
             total += review.getRating();
         }
         
-        return ((float)total / reviews.size());
+        return ((float)total / getReviews().size());
     }
 
     /**
@@ -181,6 +183,17 @@ public class Album {
      */
     public String getArtistAsString() {
         return artistAsString;
+    }
+
+    /**
+     * @return the reviews
+     */
+    public ArrayList<Review> getReviews() {
+        return reviews;
+    }
+    
+    public void addReview(Review review) {
+        reviews.add(review);
     }
     
 }
