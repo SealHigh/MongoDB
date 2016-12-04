@@ -59,7 +59,6 @@ public class AlbumCollection implements DBQueries {
         int rating= 0;
         ResultSet rs = null;
         Statement stmt = null;
-        Connection conn = null;
         try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery("select AVG(rating) from t_rating where albumId = '"+ albumId +"'");
