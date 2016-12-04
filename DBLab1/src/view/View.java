@@ -222,13 +222,13 @@ public class View {
             return new ReadOnlyStringWrapper(nrOfReviewsString);
         });
         
-        titleCol.prefWidthProperty().bind(mainTable.widthProperty().divide(4.02)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
+        titleCol.prefWidthProperty().bind(mainTable.widthProperty().divide(6.02)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
         titleCol.setStyle("-fx-alignment: CENTER;");
-        artistCol.prefWidthProperty().bind(mainTable.widthProperty().divide(5.02));
+        artistCol.prefWidthProperty().bind(mainTable.widthProperty().divide(6.02));
         artistCol.setStyle("-fx-alignment: CENTER;");
         releaseDateCol.prefWidthProperty().bind(mainTable.widthProperty().divide(10.03));
         releaseDateCol.setStyle("-fx-alignment: CENTER;");
-        genreCol.prefWidthProperty().bind(mainTable.widthProperty().divide(5.02));
+        genreCol.prefWidthProperty().bind(mainTable.widthProperty().divide(6.02));
         genreCol.setStyle("-fx-alignment: CENTER;");
         lengthCol.prefWidthProperty().bind(mainTable.widthProperty().divide(10.03));
         lengthCol.setStyle("-fx-alignment: CENTER;");
@@ -264,7 +264,7 @@ public class View {
         border.setCenter(mainTable);
         
         //Add BorderPane to scene
-        scene = new Scene(border, 1100, 600);
+        scene = new Scene(border, 1400, 600);
 
         updateTextArea(ac.getAllRecords()); //den gör inget - den laddar alla 
                                             //album i db vid start och annars
