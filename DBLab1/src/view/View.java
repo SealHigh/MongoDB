@@ -95,6 +95,10 @@ public class View {
 
             @Override
             public void handle(ActionEvent event) {
+                Alert alert = new Alert(AlertType.CONFIRMATION, "View All Albums tryckt!");
+                alert.setTitle("");
+                alert.setHeaderText(null);
+                alert.showAndWait();
                 con.handleGetAllAlbumsEvent();
             }
         });

@@ -151,7 +151,7 @@ public class Album {
     
     private String artistToString() {
         String info = "";
-        for (Artist artist : artists) {
+        for (Artist artist : this.artists) {
             info += artist.getName() + ", ";
         }
         

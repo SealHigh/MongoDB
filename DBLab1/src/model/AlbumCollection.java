@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import javafx.scene.control.Alert;
 
 
 public class AlbumCollection implements DBQueries {
@@ -21,7 +22,11 @@ public class AlbumCollection implements DBQueries {
         try {
             ArrayList<Artist> artists = getArtists(album.getInt("albumId"));
             ArrayList<String> genres = getGenres(album.getInt("albumId"));
-
+            
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, artists.toString());
+                alert.setTitle("");
+                alert.setHeaderText(null);
+                alert.showAndWait();
             tempAlbum = new Album(album.getInt("albumId"), album.getString("title"), artists, genres,
                     album.getString("releaseDate"),  album.getString("lengthMinutes"),  album.getInt("nrOfSongs"), getAlbumRating(album.getInt("albumId")));
         }
@@ -73,7 +78,6 @@ public class AlbumCollection implements DBQueries {
         finally {
             try { if (rs != null) rs.close(); } catch (Exception e) {}
             try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
         }
         return rating;
     }
@@ -106,14 +110,14 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public ArrayList<Artist> getArtists(int albumID){
+        
         ArrayList<Artist> artists = new ArrayList<>();
         ResultSet artist = null;
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
             artist = stmt.executeQuery("SELECT artistName, nationality FROM t_artist WHERE artistID IN " +
-                    "(SELECT  artistID FROM ct_album_artist WHERE albumID ='" + albumID +"')");
-
+                    "(SELECT  artistID FROM ct_album_artist WHERE albumID ='" + albumID +"')");                  
             while (artist.next()) {
                 Artist temp = new Artist(artist.getString("artistName"), artist.getString("nationality"));
                 artists.add(temp);
@@ -147,6 +151,10 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public ArrayList<Album> getAllRecords() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "getAllRecords körs");
+                alert.setTitle("");
+                alert.setHeaderText(null);
+                alert.showAndWait();
         ArrayList<Album> albums = new ArrayList<>();
         ResultSet album = null;
         Statement stmt = null;
@@ -186,5 +194,3 @@ public class AlbumCollection implements DBQueries {
         return albums;
     }
 }
-    
-
