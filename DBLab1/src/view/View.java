@@ -83,14 +83,6 @@ public class View {
             }
         });
 
-        Button deleteButton = new Button("Delete");
-        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
-                con.handleDeleteAlbumEvent(slectedAlbum);
-            }
-        });
         
         Button switchViewButton = new Button("Switch Albums/Movies");
         switchViewButton.setOnAction(new EventHandler<ActionEvent>() {
