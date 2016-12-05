@@ -156,7 +156,7 @@ public class View {
         //Create FlowPane to hold buttons at bottom and add buttons
         bottomPane = new FlowPane();
         bottomPane.setHgap(20);
-        bottomPane.getChildren().addAll(searchAlbumsButton, viewAllAlbumsButton, deleteButton, switchViewButton);
+        bottomPane.getChildren().addAll(searchAlbumsButton, viewAllAlbumsButton, switchViewButton);
         bottomPane.setAlignment(Pos.CENTER);
         bottomPane.setPrefHeight(50);
         

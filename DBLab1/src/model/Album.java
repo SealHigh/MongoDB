@@ -158,6 +158,10 @@ public class Album {
         return info.replaceAll(", $", "");
     }
     
+    /**
+     * 
+     * @return genres as a string
+     */
     private String genreToString() {
         String info = "";
         for (String genre : genres) {
@@ -168,7 +172,7 @@ public class Album {
     }
 
     /**
-     * @return the genreAsString
+     * @return genres as a string for cellValueFactory
      */
     public String getGenreAsString() {
         return genreAsString;
