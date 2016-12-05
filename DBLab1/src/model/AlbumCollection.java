@@ -1,6 +1,8 @@
 
 package model;
 
+import com.sun.deploy.security.ValidationState;
+
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -38,20 +40,34 @@ public class AlbumCollection implements DBQueries {
     public void insertRecord(Object o) {
         Album album = (Album)o;
         try {
+
+
+            DatabaseMetaData meta = conn.getMetaData();
+
+// Listing all stored procedures
+            ResultSet res = meta.getProcedures(null, "HERONG", "%");
+            System.out.println("Stored procedures:");
+            while (res.next()) {
+                System.out.println(
+                        "   "+res.getString("PROCEDURE_CAT")
+                                + ", "+res.getString("PROCEDURE_SCHEM")
+                                + ", "+res.getString("PROCEDURE_NAME"));
+            }
+            res.close();
             conn.setAutoCommit(false);
-            String call = "{? = call insertAlbum(?,?,?,?)}";
+            String call = "{call insertAlbum(?,?,?,?,?)}";
             CallableStatement insertAlbum = conn.prepareCall(call);
             insertAlbum.registerOutParameter(1, Types.INTEGER);
             insertAlbum.setString(2, album.getTitle());
             insertAlbum.setInt(3, album.getNumberOfSongs());
             insertAlbum.setInt(4, Integer.parseInt(album.getLength()));
             insertAlbum.setDate(5, new Date(19940222));
-
+            insertAlbum.execute();
             int ID = insertAlbum.getInt(1); //The id of the new album for adding artist and genre
             System.out.println(ID);
 
 
-            insertAlbum.execute();
+
             conn.commit();
 
         } catch (Exception e) {
