@@ -30,12 +30,17 @@ public class View {
     private AlbumCollection ac;
     private QueryDialog queryDialog;
     private AddDialog addDialog;
+    private LogInDialog logInDialog;
     private Stage primaryStage;
     private Scene scene;
     private TableView<Album> mainTable;
     private TableView<Review> reviewTable;
     private BorderPane border;
     private Scene singleAlbumScene;
+    private FlowPane bottomPane;
+    private FlowPane loggedInPane;
+    private MenuBar menuBar;
+    private MenuBar lImenuBar;
     
     public View(AlbumCollection ac, Stage primaryStage) throws IOException, ClassNotFoundException {
         
@@ -44,11 +49,13 @@ public class View {
         Controller con = new Controller(ac, this);
         queryDialog = new QueryDialog();
         addDialog = new AddDialog();
+        logInDialog = new LogInDialog();
         //sbd = new SearchBooksDialog(primaryStage);
         
         border = new BorderPane();
         
         initReviewTableView();
+        initLoggedInPaneAndMenu(con);
         
         //Create buttons 'Add Album', 'Search Albums' and 'View All' at bottom
         Button addAlbumButton = new Button("Add Album");
@@ -125,12 +132,29 @@ public class View {
         //and 'Exit'
         Menu fileMenu = new Menu("File");
         
-        MenuItem saveAlbumsItem = new MenuItem("Save Albums");
-        saveAlbumsItem.setOnAction(new EventHandler<ActionEvent>() {
+        MenuItem logInItem = new MenuItem("Log in");
+        logInItem.setOnAction(new EventHandler<ActionEvent>() {
                 
             @Override
             public void handle(ActionEvent event) {
-                //Save? Ie write to db?
+                Optional<LogInInfo> result
+                        = logInDialog.showAndWait();
+                if (result.isPresent()) {
+                    LogInInfo li = result.get();
+                    String userName = li.getUserName();
+                    String password = li.getPassword();
+                    if(con.handleLogInEvent(userName, password)) {
+                        border.setBottom(loggedInPane);
+                        border.setTop(lImenuBar);
+                    }
+                    else {
+                        Alert alert = new Alert(AlertType.INFORMATION, "Login failed! Username or password invalid.");
+                        alert.setTitle("");
+                        alert.setHeaderText(null);
+                        alert.showAndWait();
+                    }
+                    queryDialog.clearFields();
+                }
             }
         });
         
@@ -152,19 +176,19 @@ public class View {
         });
         
         //Add sub menus to menu option 'File'
-        fileMenu.getItems().addAll(saveAlbumsItem, exitApplicationItem);
+        fileMenu.getItems().addAll(logInItem, exitApplicationItem);
         
         //Create menu bar and add menu option 'File'
-        MenuBar menuBar = new MenuBar();
+        menuBar = new MenuBar();
         menuBar.getMenus().add(fileMenu);
         
         //Set menu bar to top of BorderPane
         border.setTop(menuBar);
         
         //Create FlowPane to hold buttons at bottom and add buttons
-        FlowPane bottomPane = new FlowPane();
+        bottomPane = new FlowPane();
         bottomPane.setHgap(20);
-        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton,rateButton, deleteButton);
+        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton, deleteButton);
         bottomPane.setAlignment(Pos.CENTER);
         bottomPane.setPrefHeight(50);
         
@@ -338,7 +362,133 @@ public class View {
         reviewTable.setItems(reviews);
         reviewTable.getColumns().addAll(userCol, ratingCol, commentCol);
     }
+    
+    public void initLoggedInPaneAndMenu(Controller con) {
+        //Create buttons 'Add Album', 'Search Albums' and 'View All' at bottom
+        Button lIaddAlbumButton = new Button("Add Album");
+        lIaddAlbumButton.setOnAction(new EventHandler<ActionEvent>() {
 
+            @Override
+            public void handle(ActionEvent event) {
+                Optional<AddInfo> result
+                        = addDialog.showAndWait();
+                if (result.isPresent()) {
+                    AddInfo info = result.get();
+                    try {
+                        con.handleAddAlbumEvent(info.getTitle(), info.getArtists(),
+                                info.getReleaseDate(), info.getNrOfSongs(), info.getLength(), info.getGenres());
+                    }
+                    catch (NumberFormatException e){
+                        //Error dialog here "Fill all fields"
+                    }
+                    addDialog.clearFields();
+                }
+
+            }
+        });
+        
+        Button lIsearchAlbumsButton = new Button("Search Albums");
+        lIsearchAlbumsButton.setOnAction(new EventHandler<ActionEvent>() {
+                
+            @Override
+            public void handle(ActionEvent event) {
+                Optional<QueryInfo> result
+                        = queryDialog.showAndWait();
+                if (result.isPresent()) {
+                    QueryInfo qi = result.get();
+                    String userInput = qi.getUserInput();
+                    SearchOptions searchOption = qi.getSearchOption();
+                    con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
+                    queryDialog.clearFields();
+                }
+            }
+        });
+        
+        Button lIviewAllAlbumsButton = new Button("View All Albums");
+        lIviewAllAlbumsButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                Alert alert = new Alert(AlertType.CONFIRMATION, "View All Albums tryckt!");
+                alert.setTitle("");
+                alert.setHeaderText(null);
+                alert.showAndWait();
+                con.handleGetAllAlbumsEvent();
+            }
+        });
+
+        Button lIdeleteButton = new Button("Delete");
+        lIdeleteButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
+                con.handleDeleteAlbumEvent(slectedAlbum);
+            }
+        });
+
+        Button lIrateButton = new Button("Rate");
+        lIrateButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
+                con.handleDeleteAlbumEvent(slectedAlbum);
+            }
+        });
+        
+        //Create FlowPane loggedInPane
+        loggedInPane = new FlowPane();
+        loggedInPane.setHgap(20);
+        loggedInPane.getChildren().addAll(lIaddAlbumButton, lIsearchAlbumsButton, lIviewAllAlbumsButton, lIrateButton, lIdeleteButton);
+        loggedInPane.setAlignment(Pos.CENTER);
+        loggedInPane.setPrefHeight(50);
+        
+        //Create menu option 'File' and sub menus 'Open File', 'Save File'
+        //and 'Exit'
+       Menu lIfileMenu = new Menu("File");
+        
+        MenuItem lIlogOutItem = new MenuItem("Log out");
+        lIlogOutItem.setOnAction(new EventHandler<ActionEvent>() {
+                
+            @Override
+            public void handle(ActionEvent event) {
+                Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to log out?");
+                alert.setTitle("Log out");
+                alert.setHeaderText(null);
+                
+                Optional<ButtonType> result = alert.showAndWait();               
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    con.handleLogOutEvent();
+                    border.setBottom(bottomPane);
+                    border.setTop(lImenuBar);
+                }
+            }
+        });
+        
+        MenuItem lIexitApplicationItem = new MenuItem("Exit");
+        lIexitApplicationItem.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to exit?");
+                alert.setTitle("Exit");
+                alert.setHeaderText(null);
+                
+                Optional<ButtonType> result = alert.showAndWait();               
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    //Save? Ie write to db?
+                    primaryStage.close();
+                }
+            }
+        });
+        
+        //Add sub menus to menu option 'File'
+        lIfileMenu.getItems().addAll(lIlogOutItem, lIexitApplicationItem);
+        
+        //Create menu bar and add menu option 'File'
+        lImenuBar = new MenuBar();
+        lImenuBar.getMenus().add(lIfileMenu);
+    }
+    
     /**
      * @return the primaryStage
      */

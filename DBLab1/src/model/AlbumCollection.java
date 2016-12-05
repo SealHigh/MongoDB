@@ -1,7 +1,7 @@
 
 package model;
 
-import com.sun.deploy.security.ValidationState;
+//import com.sun.deploy.security.ValidationState;
 
 import java.sql.*;
 import java.sql.Date;
@@ -13,12 +13,55 @@ import java.util.*;
 public class AlbumCollection implements DBQueries {
 
     private Connection conn = null;
+    private LoggedInUser loggedInUser;
 
     public AlbumCollection () {
         conn =  ConnectionConfiguration.getConnection(); //star connection for session
     }
 
-
+    public boolean userLogIn(String userName, String password) {
+        
+        int number = 0;
+        ResultSet rs = null;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT COUNT(*) AS number FROM t_user WHERE userName = '"+ userName + "' AND password = '" + password + "';");
+            
+            while (rs.next()) {
+                number = rs.getInt("number");
+            }
+            
+        }
+        catch (Exception e){
+        }
+        finally {
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+        }
+        
+        if (number > 0) {
+            rs = null;           
+            try {
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery("SELECT userId, userName FROM t_user WHERE userName = '"+ userName + "' AND password = '" + password + "';");
+                
+                /*if (rs == null) {
+                    throw new Exception e;
+                }*/
+                
+                while (rs.next()) {
+                    LoggedInUser user = new LoggedInUser(rs.getString("userName"), rs.getInt("userId"));
+                    setLoggedInUser(user);
+                }                          
+            }
+            catch (Exception e){
+            }
+            finally {
+                try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+            }
+        }
+        return number > 0;
+    }
 
     private Album createAlbumFromResultSet(ResultSet album){
         Album tempAlbum = null;
@@ -26,10 +69,6 @@ public class AlbumCollection implements DBQueries {
             ArrayList<Artist> artists = getArtists(album.getInt("albumId"));
             ArrayList<String> genres = getGenres(album.getInt("albumId"));
             
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, artists.toString());
-                alert.setTitle("");
-                alert.setHeaderText(null);
-                alert.showAndWait();
             tempAlbum = new Album(album.getInt("albumId"), album.getString("title"), artists, genres,
                     album.getString("releaseDate"),  album.getString("lengthMinutes"),  album.getInt("nrOfSongs"), getAlbumRating(album.getInt("albumId")));
         }
@@ -77,6 +116,7 @@ public class AlbumCollection implements DBQueries {
 
         } catch (Exception e) {
             e.printStackTrace();
+            //conn.rollback(); ?
         }
         finally {
             try {conn.setAutoCommit(true);} catch (Exception e){}
@@ -185,10 +225,7 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public ArrayList<Album> getAllRecords() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "getAllRecords körs");
-                alert.setTitle("");
-                alert.setHeaderText(null);
-                alert.showAndWait();
+        
         ArrayList<Album> albums = new ArrayList<>();
         ResultSet album = null;
         Statement stmt = null;
@@ -228,5 +265,19 @@ public class AlbumCollection implements DBQueries {
             try { if (stmt != null) stmt.close(); } catch (Exception e) {}
         }
         return albums;
+    }
+
+    /**
+     * @return the loggedInUser
+     */
+    public LoggedInUser getLoggedInUser() {
+        return loggedInUser;
+    }
+
+    /**
+     * @param loggedInUser the loggedInUser to set
+     */
+    public void setLoggedInUser(LoggedInUser loggedInUser) {
+        this.loggedInUser = loggedInUser;
     }
 }

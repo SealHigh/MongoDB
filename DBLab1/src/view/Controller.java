@@ -56,6 +56,14 @@ public class Controller {
         view.updateTextArea(ac.getAllRecords());
 
     }
+    
+    public boolean handleLogInEvent(String userName, String password) {
+        return ac.userLogIn(userName,password);
+    }
+    
+    public void handleLogOutEvent() {
+        ac.setLoggedInUser(null);
+    }
 
     
     public String validateQueryDialogInput() {
