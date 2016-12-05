@@ -62,6 +62,11 @@ public class Controller {
 
     }
     
+    public void handleAddReviewEvent(Album slectedAlbum, String rating, String comment) {
+        //Parse to int
+        //add -> ac.getLoggedInUser().getUserId() and send to modell 
+    }
+    
     public boolean handleLogInEvent(String userName, String password) {
         return ac.userLogIn(userName,password);
     }

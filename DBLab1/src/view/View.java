@@ -427,7 +427,7 @@ public class View {
                     ReviewInfo ri = result.get();
                     String rating = ri.getRating();
                     String comment = ri.getComment();
-                    con.handleAddReviewEvent(ac.getLoggedInUser().getUserId(), slectedAlbum, rating, comment);
+                    con.handleAddReviewEvent(slectedAlbum, rating, comment);
                     //con.handleQueryEvent(rating, userInput); //try-catch här för om inget resultat?
                     addReviewDialog.clearFields();
                 }
