@@ -26,10 +26,15 @@ public class AlbumCollection implements DBQueries {
         
         int number = 0;
         ResultSet rs = null;
-        Statement stmt = null;
+        PreparedStatement checkLogin = null;
+        PreparedStatement getLoginInfo = null;
         try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT COUNT(*) AS number FROM t_user WHERE userName = '"+ userName + "' AND password = '" + password + "';");
+            String sql = "SELECT COUNT(*) AS number FROM t_user WHERE userName = ? AND password = ?";
+            checkLogin = conn.prepareStatement(sql);
+            checkLogin.setString(1, userName);
+            checkLogin.setString(2, password);            
+            checkLogin.execute();
+            rs = checkLogin.getResultSet();
             
             while (rs.next()) {
                 number = rs.getInt("number");
@@ -39,18 +44,18 @@ public class AlbumCollection implements DBQueries {
         catch (Exception e){
         }
         finally {
-            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+            try { if (checkLogin != null) checkLogin.close(); } catch (Exception e) {}
         }
         
         if (number > 0) {
             rs = null;           
             try {
-                stmt = conn.createStatement();
-                rs = stmt.executeQuery("SELECT userId, userName FROM t_user WHERE userName = '"+ userName + "' AND password = '" + password + "';");
-                
-                /*if (rs == null) {
-                    throw new Exception e;
-                }*/
+                String sql = "SELECT userId, userName FROM t_user WHERE userName = ? AND password = ?";
+                getLoginInfo = conn.prepareStatement(sql);
+                getLoginInfo.setString(1, userName);
+                getLoginInfo.setString(2, password);
+                getLoginInfo.execute();
+                rs = getLoginInfo.getResultSet();
                 
                 while (rs.next()) {
                     LoggedInUser user = new LoggedInUser(rs.getString("userName"), rs.getInt("userId"));
@@ -60,7 +65,7 @@ public class AlbumCollection implements DBQueries {
             catch (Exception e){
             }
             finally {
-                try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+                try { if (getLoginInfo != null) getLoginInfo.close(); } catch (Exception e) {}
             }
         }
         return number > 0;
@@ -303,7 +308,6 @@ public class AlbumCollection implements DBQueries {
         return albums;
     }
 
-
     @Override
     public ArrayList<Album>  searchTitle(String title){
         ArrayList<Album> albums = new ArrayList<>();
@@ -409,6 +413,47 @@ public class AlbumCollection implements DBQueries {
             try { if (stmt != null) stmt.close(); } catch (Exception e) {}
         }
         return albums;
+    }
+    
+    @Override
+    public ArrayList<Movie> getAllMovies() {
+
+        ArrayList<Movie> movies = new ArrayList<>();
+        ResultSet movie = null;
+        Statement stmt = null;
+        try {
+            //We dont need transation here since its only select calls
+            stmt = conn.createStatement();
+            movie = stmt.executeQuery("SELECT * FROM t_movie");
+
+            while(movie.next()){
+                movies.add(createMovieFromResultSet(movie));
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            try { if (movie != null) movie.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+        }
+        return movies;
+    }
+    
+    private Movie createMovieFromResultSet(ResultSet movie){
+        Movie tempMovie = null;
+        try {
+            Director director = getDirector(movie.getInt("movieId"));
+            ArrayList<String> genres = getGenres(movie.getInt("movieId"));
+            
+            tempMovie = new Movie(movie.getInt("movieId"), movie.getString("title"), director, genres,
+                    movie.getString("releaseYear"),  movie.getString("lengthMinutes"), getMovieRating(movie.getInt("movieId")));
+        }
+        catch (Exception e){
+
+        }
+        return tempMovie;
+
     }
 
     /**
