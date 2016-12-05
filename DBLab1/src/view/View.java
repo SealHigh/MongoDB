@@ -126,7 +126,7 @@ public class View {
             @Override
             public void handle(ActionEvent event) {
                 Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
-                con.handleDeleteAlbumEvent(slectedAlbum);
+                con.handleRateAlbumEvent(slectedAlbum.getAlbumID(), 5);
             }
         });
                
@@ -296,10 +296,7 @@ public class View {
         //Add BorderPane to scene
         scene = new Scene(border, 1400, 600);
 
-        updateTextArea(ac.getAllRecords()); //den gör inget - den laddar alla
-                                            //album i db vid start och annars
-                                            //byter den border till att text där
-                                            //det står att den är tom
+        updateTextArea(ac.getAllRecords());
     }
 
     public void updateTextArea(ArrayList<Album> albumList) {
@@ -443,7 +440,7 @@ public class View {
                 }
                 
                 Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
-                con.handleDeleteAlbumEvent(slectedAlbum);
+                con.handleRateAlbumEvent(slectedAlbum.getAlbumID(), 5);
             }
         });
         
