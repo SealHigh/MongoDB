@@ -4,10 +4,10 @@ package model;
 import com.sun.deploy.security.ValidationState;
 
 import java.sql.*;
+import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.*;
 
 
 public class AlbumCollection implements DBQueries {
@@ -61,7 +61,8 @@ public class AlbumCollection implements DBQueries {
             insertAlbum.setString(2, album.getTitle());
             insertAlbum.setInt(3, album.getNumberOfSongs());
             insertAlbum.setInt(4, Integer.parseInt(album.getLength()));
-            insertAlbum.setDate(5, new Date(19940222));
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+            insertAlbum.setDate(5, new Date(format.parse(album.getReleaseDate()).getTime()));
             insertAlbum.execute();
             int ID = insertAlbum.getInt(1); //The id of the new album for adding artist and genre
             System.out.println(ID);
