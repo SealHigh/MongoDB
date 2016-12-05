@@ -3,8 +3,11 @@ package model;
 
 //import com.sun.deploy.security.ValidationState;
 
+import com.mysql.jdbc.exceptions.MySQLDataException;
+
 import java.sql.*;
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -84,8 +87,7 @@ public class AlbumCollection implements DBQueries {
 
     }
 
-    public void setAlbumRating(int rating, String comment, int albumID){
-        try {
+    public void setAlbumRating(int rating, String comment, int albumID) throws Exception{
 
             String sql = "INSERT INTO t_review(rating, userComment, albumID, userID) VALUES(?,?,?,?)";
             PreparedStatement addAlbumRating = conn.prepareStatement(sql);
@@ -96,15 +98,11 @@ public class AlbumCollection implements DBQueries {
             System.out.println(albumID + "  " + loggedInUser.getUserId() + "  "+ rating);
             addAlbumRating.execute();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
 
     @Override
-    public void insertRecord(Object o) {
+    public void insertRecord(Object o) throws ParseException {
         Album album = (Album)o;
         try {
 
@@ -142,8 +140,6 @@ public class AlbumCollection implements DBQueries {
 
         } catch (Exception e) {
             try {if(conn != null) conn.rollback();} catch (Exception ex){}
-            e.printStackTrace();
-            //conn.rollback(); ?
         }
         finally {
             try {conn.setAutoCommit(true);} catch (Exception e){}
@@ -172,7 +168,11 @@ public class AlbumCollection implements DBQueries {
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("select AVG(rating) from t_review where albumId = '"+ albumId +"'");
+            String sql = "select AVG(rating) from t_review where albumId = ?";
+            PreparedStatement getRating = conn.prepareStatement(sql);
+            getRating.setInt(1, albumId);
+            getRating.execute();
+            rs = getRating.getResultSet();
 
             if(rs.next())
                 rating = rs.getInt("AVG(rating)");
@@ -223,7 +223,13 @@ public class AlbumCollection implements DBQueries {
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            genre = stmt.executeQuery("SELECT genre FROM t_genre WHERE albumID = '"+ albumID +"'");
+            stmt = conn.createStatement();
+            String sql = "SELECT genre FROM t_genre WHERE albumID = ?";
+            PreparedStatement getGenre = conn.prepareStatement(sql);
+            getGenre.setInt(1, albumID);
+            getGenre.execute();
+            genre = getGenre.getResultSet();
+
             while (genre.next()) {
                 genres.add(genre.getString("genre"));
             }
@@ -276,8 +282,13 @@ public class AlbumCollection implements DBQueries {
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            artist = stmt.executeQuery("SELECT artistName, nationality FROM t_artist WHERE artistID IN " +
-                    "(SELECT  artistID FROM ct_album_artist WHERE albumID ='" + albumID +"')");                  
+
+            String sql = "SELECT artistName, nationality FROM t_artist WHERE artistID IN " +
+                    "(SELECT  artistID FROM ct_album_artist WHERE albumID = ?)";
+            PreparedStatement getArtist = conn.prepareStatement(sql);
+            getArtist.setInt(1, albumID);
+            getArtist.execute();
+            artist = getArtist.getResultSet();
             while (artist.next()) {
                 Artist temp = new Artist(artist.getString("artistName"), artist.getString("nationality"));
                 artists.add(temp);

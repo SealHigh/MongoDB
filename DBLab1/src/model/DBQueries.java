@@ -4,6 +4,7 @@ package model;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Observer;
@@ -22,7 +23,7 @@ public interface DBQueries {
     
     <T> ArrayList<T> getAllMovies();
 
-    void insertRecord(Object o);
+    void insertRecord(Object o) throws ParseException;
 
     void deleteRecord(Object o);
 

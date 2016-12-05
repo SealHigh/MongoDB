@@ -60,29 +60,7 @@ public class View {
         initReviewTableView();
         initMovieTableView();
         initLoggedInPaneAndMenu(con);
-        
-        //Create buttons 'Add Album', 'Search Albums' and 'View All' at bottom
-        Button addAlbumButton = new Button("Add Album");
-        addAlbumButton.setOnAction(new EventHandler<ActionEvent>() {
 
-            @Override
-            public void handle(ActionEvent event) {
-                Optional<AddInfo> result
-                        = addDialog.showAndWait();
-                if (result.isPresent()) {
-                    AddInfo info = result.get();
-                    try {
-                        con.handleAddAlbumEvent(info.getTitle(), info.getArtists(),
-                                info.getReleaseDate(), info.getNrOfSongs(), info.getLength(), info.getGenres());
-                    }
-                    catch (NumberFormatException e){
-                        //Error dialog here "Fill all fields"
-                    }
-                    addDialog.clearFields();
-                }
-
-            }
-        });
         
         Button searchAlbumsButton = new Button("Search Albums");
         searchAlbumsButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -106,10 +84,6 @@ public class View {
 
             @Override
             public void handle(ActionEvent event) {
-                Alert alert = new Alert(AlertType.CONFIRMATION, "View All Albums tryckt!");
-                alert.setTitle("");
-                alert.setHeaderText(null);
-                alert.showAndWait();
                 con.handleGetAllAlbumsEvent();
             }
         });
@@ -377,13 +351,11 @@ public class View {
                         = addDialog.showAndWait();
                 if (result.isPresent()) {
                     AddInfo info = result.get();
-                    try {
+
                         con.handleAddAlbumEvent(info.getTitle(), info.getArtists(),
                                 info.getReleaseDate(), info.getNrOfSongs(), info.getLength(), info.getGenres());
-                    }
-                    catch (NumberFormatException e){
-                        //Error dialog here "Fill all fields"
-                    }
+
+
                     addDialog.clearFields();
                 }
 
