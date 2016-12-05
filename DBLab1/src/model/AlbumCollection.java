@@ -89,7 +89,6 @@ public class AlbumCollection implements DBQueries {
             addAlbumRating.setInt(3, rating);
             System.out.println(albumID + "  " + loggedInUser.getUserId() + "  "+ rating);
             addAlbumRating.execute();
-            conn.commit();
 
         } catch (Exception e) {
 
