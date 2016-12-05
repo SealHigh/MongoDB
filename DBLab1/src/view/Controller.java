@@ -1,9 +1,12 @@
 
 package view;
 
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import model.Album;
 import model.AlbumCollection;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import javafx.scene.control.Alert;
@@ -39,7 +42,21 @@ public class Controller {
     public void handleReviewAlbumEvent(int albumID, int rating, String comment) {
         new Thread() {
             public void run() {
-                ac.setAlbumRating(rating,comment,albumID);
+                try {
+                    ac.setAlbumRating(rating, comment, albumID);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    javafx.application.Platform.runLater(
+                            new Runnable() {
+                                public void run() {
+                                    Alert alert = new Alert(Alert.AlertType.ERROR, "You can only make one review for each album/film ");
+                                    alert.setTitle("");
+                                    alert.setHeaderText(null);
+                                    alert.showAndWait();
+                                }
+                            });
+                }
                 ArrayList<Album> albums = ac.getAllRecords();
                 javafx.application.Platform.runLater(
                         new Runnable() {
@@ -53,9 +70,6 @@ public class Controller {
 
 
     public void handleGetAllAlbumsEvent() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "handleGetAllAlbumsEvent körs");
-                alert.setTitle("");
-                alert.setHeaderText(null);
         new Thread() {
             public void run() {
                 ArrayList<Album> albums = ac.getAllRecords();
@@ -124,15 +138,10 @@ public class Controller {
                             }.start();
                             break;
         }
-         //Searchoption.TITLE is hardcoded temporary since i coded using Enum so gotta change one
-
-
-//        Alert alert = new Alert(Alert.AlertType.WARNING, searchOption.toString());
-//        alert.showAndWait();
     }
     
     public void handleAddAlbumEvent(String title, String artists, String releaseDate,
-                                    String nrOfSongs, String length, String genres) throws  NumberFormatException{
+                                    String nrOfSongs, String length, String genres){
 
         //This is temporary for a quick test
         ArrayList<String> genre = new ArrayList<>();
@@ -143,8 +152,22 @@ public class Controller {
         /////////////////////////////////////////////
 
         new Thread() {
-            public void run() {
-                ac.insertRecord(new Album(genre,title,artist,releaseDate,length,Integer.parseInt(nrOfSongs)));
+            public void run(){
+                try {
+                    ac.insertRecord(new Album(genre,title,artist,releaseDate,length,Integer.parseInt(nrOfSongs)));
+                }
+                catch (Exception e){
+                    javafx.application.Platform.runLater(
+                            new Runnable() {
+                                public void run() {
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Wrong format. Example: ('title', 'name', 'yyyy-mm-dd', 10, 30, 'Rock'  ");
+                                    alert.setTitle("");
+                                    alert.setHeaderText(null);
+                                    alert.showAndWait();
+                                }
+                            });
+                }
+
                 ArrayList<Album> albums =  ac.getAllRecords();
                 javafx.application.Platform.runLater(
                         new Runnable() {

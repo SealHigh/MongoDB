@@ -45,7 +45,7 @@ public class AddDialog extends Dialog<AddInfo> {
         grid.add(artists, 2, 2);
         grid.add(new Label("Number of songs"), 1, 3);
         grid.add(numberOfSongs, 2, 3);
-        grid.add(new Label("Release date"), 1, 4);
+        grid.add(new Label("Release date(yyyymmdd)"), 1, 4);
         grid.add(releaseDate, 2, 4);
         grid.add(new Label("Length"), 1, 5);
         grid.add(length, 2, 5);

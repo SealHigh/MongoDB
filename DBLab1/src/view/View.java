@@ -59,29 +59,7 @@ public class View {
         
         initReviewTableView();
         initLoggedInPaneAndMenu(con);
-        
-        //Create buttons 'Add Album', 'Search Albums' and 'View All' at bottom
-        Button addAlbumButton = new Button("Add Album");
-        addAlbumButton.setOnAction(new EventHandler<ActionEvent>() {
 
-            @Override
-            public void handle(ActionEvent event) {
-                Optional<AddInfo> result
-                        = addDialog.showAndWait();
-                if (result.isPresent()) {
-                    AddInfo info = result.get();
-                    try {
-                        con.handleAddAlbumEvent(info.getTitle(), info.getArtists(),
-                                info.getReleaseDate(), info.getNrOfSongs(), info.getLength(), info.getGenres());
-                    }
-                    catch (NumberFormatException e){
-                        //Error dialog here "Fill all fields"
-                    }
-                    addDialog.clearFields();
-                }
-
-            }
-        });
         
         Button searchAlbumsButton = new Button("Search Albums");
         searchAlbumsButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -105,22 +83,10 @@ public class View {
 
             @Override
             public void handle(ActionEvent event) {
-                Alert alert = new Alert(AlertType.CONFIRMATION, "View All Albums tryckt!");
-                alert.setTitle("");
-                alert.setHeaderText(null);
-                alert.showAndWait();
                 con.handleGetAllAlbumsEvent();
             }
         });
 
-        Button deleteButton = new Button("Delete");
-        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
-                con.handleDeleteAlbumEvent(slectedAlbum);
-            }
-        });
 
         //Create menu option 'File' and sub menus 'Open File', 'Save File'
         //and 'Exit'
@@ -182,7 +148,7 @@ public class View {
         //Create FlowPane to hold buttons at bottom and add buttons
         bottomPane = new FlowPane();
         bottomPane.setHgap(20);
-        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton, deleteButton);
+        bottomPane.getChildren().addAll(searchAlbumsButton, viewAllAlbumsButton);
         bottomPane.setAlignment(Pos.CENTER);
         bottomPane.setPrefHeight(50);
         
@@ -364,13 +330,11 @@ public class View {
                         = addDialog.showAndWait();
                 if (result.isPresent()) {
                     AddInfo info = result.get();
-                    try {
+
                         con.handleAddAlbumEvent(info.getTitle(), info.getArtists(),
                                 info.getReleaseDate(), info.getNrOfSongs(), info.getLength(), info.getGenres());
-                    }
-                    catch (NumberFormatException e){
-                        //Error dialog here "Fill all fields"
-                    }
+
+
                     addDialog.clearFields();
                 }
 
