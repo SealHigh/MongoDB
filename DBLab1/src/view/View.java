@@ -120,15 +120,6 @@ public class View {
                 con.handleDeleteAlbumEvent(slectedAlbum);
             }
         });
-
-        Button rateButton = new Button("Rate");
-        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
-                con.handleDeleteAlbumEvent(slectedAlbum);
-            }
-        });
                
         //Create menu option 'File' and sub menus 'Open File', 'Save File'
         //and 'Exit'
@@ -432,18 +423,20 @@ public class View {
         lIrateButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
                 Optional<ReviewInfo> result
                         = addReviewDialog.showAndWait();
                 if (result.isPresent()) {
                     ReviewInfo ri = result.get();
                     String rating = ri.getRating();
                     String comment = ri.getComment();
+                    con.handleAddReviewEvent(ac.getLoggedInUser().getUserId(), slectedAlbum, rating, comment);
                     //con.handleQueryEvent(rating, userInput); //try-catch här för om inget resultat?
                     addReviewDialog.clearFields();
                 }
                 
-                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
-                con.handleDeleteAlbumEvent(slectedAlbum);
+                //Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
+                //con.handleDeleteAlbumEvent(slectedAlbum);
             }
         });
         
