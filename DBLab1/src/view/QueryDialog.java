@@ -84,7 +84,7 @@ public class QueryDialog extends Dialog<QueryInfo> {
         */
         searchComboBox = new ComboBox<>();
         searchComboBox.getItems().setAll(SearchOptions.values()); //Just ugly lowercase so far!
-        searchComboBox.setValue(SearchOptions.ALBUM); //Preset Album option
+        searchComboBox.setValue(SearchOptions.TITLE); //Preset Album option
         
         GridPane grid = new GridPane();
         grid.setVgap(5);

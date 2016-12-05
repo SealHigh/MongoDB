@@ -79,19 +79,20 @@ public class AlbumCollection implements DBQueries {
 
     }
 
-    public void setAlbumRating(int rating, int albumID){
+    public void setAlbumRating(int rating, String comment, int albumID){
         try {
 
-            String sql = "INSERT INTO t_rating(albumID, userID, rating) VALUES(?,?,?)";
+            String sql = "INSERT INTO t_review(rating, comment, albumID, userID) VALUES(?,?,?,?)";
             PreparedStatement addAlbumRating = conn.prepareStatement(sql);
-            addAlbumRating.setInt(1,albumID);
-            addAlbumRating.setInt(2, loggedInUser.getUserId());
-            addAlbumRating.setInt(3, rating);
+            addAlbumRating.setInt(1,rating);
+            addAlbumRating.setString(2, comment);
+            addAlbumRating.setInt(3, albumID);
+            addAlbumRating.setInt(4, loggedInUser.getUserId());
             System.out.println(albumID + "  " + loggedInUser.getUserId() + "  "+ rating);
             addAlbumRating.execute();
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
     }
@@ -161,7 +162,7 @@ public class AlbumCollection implements DBQueries {
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("select AVG(rating) from t_rating where albumId = '"+ albumId +"'");
+            rs = stmt.executeQuery("select AVG(rating) from t_review where albumId = '"+ albumId +"'");
 
             if(rs.next())
                 rating = rs.getInt("AVG(rating)");
@@ -268,18 +269,106 @@ public class AlbumCollection implements DBQueries {
         return albums;
     }
 
+
     @Override
-    public ArrayList<Album> searchRecord(SearchOptions option, String query) {
+    public ArrayList<Album>  searchTitle(String title){
         ArrayList<Album> albums = new ArrayList<>();
-        ResultSet album = null;
         Statement stmt = null;
+        ResultSet album = null;
         try {
             stmt = conn.createStatement();
-            album = stmt.executeQuery("SELECT * FROM t_album WHERE " + option.toString() +" LIKE '%" + query+ "%'");
+            String sql = "SELECT * FROM t_album WHERE title LIKE ?";
+            PreparedStatement getAlbums = conn.prepareStatement(sql);
+            getAlbums.setString(1, "%"+title+"%");
+            getAlbums.execute();
+            album = getAlbums.getResultSet();
             while(album.next()){
                 albums.add(createAlbumFromResultSet(album));
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            try { if (album != null) album.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+        }
+        return albums;
+    }
+
+
+    @Override
+    public ArrayList<Album>  searchGenre(String genre){
+        ArrayList<Album> albums = new ArrayList<>();
+        Statement stmt = null;
+        ResultSet album = null;
+        try {
+            stmt = conn.createStatement();
+            String sql = "SELECT * from t_album where albumID In\n" +
+                    "(SELECT albumID FROM t_genre WHERE genre LIKE ?)";
+            PreparedStatement getAlbums = conn.prepareStatement(sql);
+            getAlbums.setString(1, "%"+genre+"%");
+            getAlbums.execute();
+            album = getAlbums.getResultSet();
+            while(album.next()){
+                albums.add(createAlbumFromResultSet(album));
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            try { if (album != null) album.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+        }
+        return albums;
+    }
+    @Override
+    public ArrayList<Album>  searchRating(String rating){
+        ArrayList<Album> albums = new ArrayList<>();
+        Statement stmt = null;
+        ResultSet album = null;
+        try {
+            stmt = conn.createStatement();
+            String sql = "SELECT * from t_album where albumID In\n" +
+                    "(SELECT albumID FROM t_review WHERE rating = ?)";
+            PreparedStatement getAlbums = conn.prepareStatement(sql);
+            getAlbums.setString(1, rating);
+            getAlbums.execute();
+            album = getAlbums.getResultSet();
+            while(album.next()){
+                albums.add(createAlbumFromResultSet(album));
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            try { if (album != null) album.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+        }
+        return albums;
+    }
+    @Override
+    public ArrayList<Album>  searchArtist(String artist){
+        ArrayList<Album> albums = new ArrayList<>();
+        Statement stmt = null;
+        ResultSet album = null;
+        try {
+            stmt = conn.createStatement();
+            String sql = "SELECT * from t_album where albumID IN\n" +
+                    "(SELECT albumID from ct_album_artist where artistID IN\n" +
+                    "(SELECT artistID FROM t_artist WHERE artistName LIKE ?))";
+            PreparedStatement getAlbums = conn.prepareStatement(sql);
+            getAlbums.setString(1, "%"+artist+"%");
+            getAlbums.execute();
+            album = getAlbums.getResultSet();
+            while(album.next()){
+                albums.add(createAlbumFromResultSet(album));
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
         finally {
             try { if (album != null) album.close(); } catch (Exception e) {}

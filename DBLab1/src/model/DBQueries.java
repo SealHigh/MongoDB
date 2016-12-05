@@ -31,13 +31,13 @@ public interface DBQueries {
 
     ArrayList<String> getGenres(int albumID);
 
-    /**
-     * Searches through a table records with given value
-     * @param option the column to search in
-     * @param query the value to search for
-     * @return a list of the records with the value
-     */
-    <T> ArrayList<T> searchRecord(SearchOptions option, String query);
+    <T> ArrayList<T> searchTitle(String title);
+
+    <T> ArrayList<T> searchArtist(String title);
+
+    <T> ArrayList<T> searchGenre(String title);
+
+    <T> ArrayList<T> searchRating(String title);
 
     
 }

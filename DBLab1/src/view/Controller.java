@@ -25,8 +25,8 @@ public class Controller {
         ac.deleteRecord(selectedAlbum);
         view.updateTextArea(ac.getAllRecords());
     }
-    public void handleRateAlbumEvent(int albumID, int rating) {
-        ac.setAlbumRating(albumID, rating );
+    public void handleReviewAlbumEvent(int albumID, int rating, String comment) {
+        ac.setAlbumRating(rating,comment,albumID);
         view.updateTextArea(ac.getAllRecords());
     }
 
@@ -40,9 +40,23 @@ public class Controller {
     }
 
     public void handleQueryEvent(SearchOptions searchOption, String userInput) {
-        view.updateTextArea(ac.searchRecord(SearchOptions.TITLE, userInput)); //Searchoption.TITLE is hardcoded temporary since i coded using Enum so gotta change one
-        Alert alert = new Alert(Alert.AlertType.WARNING, searchOption.toString());
-        alert.showAndWait();
+        System.out.println(searchOption.toString());
+
+        switch (searchOption.toString()){
+            case "title":   view.updateTextArea(ac.searchTitle(userInput));
+                            break;
+            case "artist":  view.updateTextArea(ac.searchArtist(userInput));
+                            break;
+            case "genre":   view.updateTextArea(ac.searchGenre(userInput));
+                            break;
+            case "rating":  view.updateTextArea(ac.searchRating(userInput));
+                            break;
+        }
+         //Searchoption.TITLE is hardcoded temporary since i coded using Enum so gotta change one
+
+
+//        Alert alert = new Alert(Alert.AlertType.WARNING, searchOption.toString());
+//        alert.showAndWait();
     }
     
     public void handleAddAlbumEvent(String title, String artists, String releaseDate, 
