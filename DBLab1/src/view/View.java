@@ -420,12 +420,14 @@ public class View {
         lIrateButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
                 Optional<ReviewInfo> result
                         = addReviewDialog.showAndWait();
                 if (result.isPresent()) {
                     ReviewInfo ri = result.get();
                     String rating = ri.getRating();
                     String comment = ri.getComment();
+                    con.handleAddReviewEvent(slectedAlbum, rating, comment);
                     //con.handleQueryEvent(rating, userInput); //try-catch här för om inget resultat?
                     addReviewDialog.clearFields();
                     Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();

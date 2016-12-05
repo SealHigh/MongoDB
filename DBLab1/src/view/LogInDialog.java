@@ -39,7 +39,7 @@ public class LogInDialog extends Dialog<LogInInfo> {
         this.getDialogPane().setContent(grid);
 
         ButtonType buttonTypeOk = new ButtonType(
-                "Add", ButtonBar.ButtonData.OK_DONE);
+                "Login", ButtonBar.ButtonData.OK_DONE);
         this.getDialogPane().getButtonTypes().add(buttonTypeOk);
         
         ButtonType buttonTypeCancel = new ButtonType(
