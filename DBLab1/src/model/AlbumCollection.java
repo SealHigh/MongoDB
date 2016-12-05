@@ -1,18 +1,21 @@
 
 package model;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import javafx.scene.control.Alert;
+import com.sun.deploy.security.ValidationState;
+
+import java.sql.*;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class AlbumCollection implements DBQueries {
 
     private Connection conn = null;
+
     public AlbumCollection () {
-        conn =  ConnectionConfiguration.getConnection();
+        conn =  ConnectionConfiguration.getConnection(); //star connection for session
     }
 
 
@@ -39,13 +42,44 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public void insertRecord(Object o) {
+        Album album = (Album)o;
         try {
-            Album album = (Album)o;
-            updateDB("INSERT INTO t_album (title, nrOfSongs, lengthMinutes, releaseDate) VALUES ('" + album.getTitle() +
-                    "','" + album.getNumberOfSongs() + "','" + album.getLength() + "','" + album.getReleaseDate() + "')");
+
+
+            DatabaseMetaData meta = conn.getMetaData();
+
+// Listing all stored procedures
+            ResultSet res = meta.getProcedures(null, "HERONG", "%");
+            System.out.println("Stored procedures:");
+            while (res.next()) {
+                System.out.println(
+                        "   "+res.getString("PROCEDURE_CAT")
+                                + ", "+res.getString("PROCEDURE_SCHEM")
+                                + ", "+res.getString("PROCEDURE_NAME"));
+            }
+            res.close();
+            conn.setAutoCommit(false);
+            String call = "{call insertAlbum(?,?,?,?,?)}";
+            CallableStatement insertAlbum = conn.prepareCall(call);
+            insertAlbum.registerOutParameter(1, Types.INTEGER);
+            insertAlbum.setString(2, album.getTitle());
+            insertAlbum.setInt(3, album.getNumberOfSongs());
+            insertAlbum.setInt(4, Integer.parseInt(album.getLength()));
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+            insertAlbum.setDate(5, new Date(format.parse(album.getReleaseDate()).getTime()));
+            insertAlbum.execute();
+            int ID = insertAlbum.getInt(1); //The id of the new album for adding artist and genre
+            System.out.println(ID);
+
+
+
+            conn.commit();
 
         } catch (Exception e) {
-
+            e.printStackTrace();
+        }
+        finally {
+            try {conn.setAutoCommit(true);} catch (Exception e){}
         }
     }
 
@@ -161,9 +195,11 @@ public class AlbumCollection implements DBQueries {
         try {
             stmt = conn.createStatement();
             album = stmt.executeQuery("SELECT * FROM t_album");
+
             while(album.next()){
                 albums.add(createAlbumFromResultSet(album));
             }
+
         }catch (Exception e){
             e.printStackTrace();
         }

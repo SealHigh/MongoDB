@@ -10,7 +10,7 @@ public class ConnectionConfiguration {
 
     public static Connection getConnection(){
         Connection connection = null;
-        String databaseName = "Labb1";
+        String databaseName = "labb1";
 
         try {
             Class.forName("com.mysql.jdbc.Driver");

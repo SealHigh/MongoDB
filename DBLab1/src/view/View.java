@@ -270,7 +270,7 @@ public class View {
         //Add BorderPane to scene
         scene = new Scene(border, 1400, 600);
 
-        updateTextArea(ac.getAllRecords()); //den gör inget - den laddar alla 
+        updateTextArea(ac.getAllRecords()); //den gör inget - den laddar alla
                                             //album i db vid start och annars
                                             //byter den border till att text där
                                             //det står att den är tom
