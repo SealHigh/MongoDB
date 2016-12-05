@@ -37,6 +37,7 @@ public class View {
     private Scene scene;
     private TableView<Album> mainTable;
     private TableView<Review> reviewTable;
+    private TableView<Movie> movieTable;
     private BorderPane border;
     private Scene singleAlbumScene;
     private FlowPane bottomPane;
@@ -58,6 +59,7 @@ public class View {
         border = new BorderPane();
         
         initReviewTableView();
+        initMovieTableView();
         initLoggedInPaneAndMenu(con);
         
         //Create buttons 'Add Album', 'Search Albums' and 'View All' at bottom
@@ -485,6 +487,93 @@ public class View {
         //Create menu bar and add menu option 'File'
         lImenuBar = new MenuBar();
         lImenuBar.getMenus().add(lIfileMenu);
+    }
+    
+    
+    public void initMovieTableView() {
+        //Create TableView
+        movieTable = new TableView<>();
+        ObservableList<Movie> movies = FXCollections.observableArrayList(ac.getAllMovies());
+        
+        TableColumn movieTitleCol = new TableColumn("Title");
+        movieTitleCol.setMinWidth(100);
+        movieTitleCol.setCellValueFactory(
+            new PropertyValueFactory<>("title")
+        );
+        
+        TableColumn releaseYearCol = new TableColumn<>("Released");
+        releaseYearCol.setMinWidth(100);
+        releaseYearCol.setCellValueFactory(
+            new PropertyValueFactory<>("releaseYear")
+        );
+        
+        TableColumn directorCol = new TableColumn("Director");
+        directorCol.setMinWidth(100);
+        directorCol.setCellValueFactory(
+            new PropertyValueFactory<>("directorAsString")
+        );
+        
+        TableColumn movieGenreCol = new TableColumn("Genre");
+        movieGenreCol.setMinWidth(100);
+        movieGenreCol.setCellValueFactory(
+            new PropertyValueFactory<>("genreAsString")
+        );
+        
+        TableColumn movieLengthCol = new TableColumn("Length");
+        movieLengthCol.setMinWidth(100);
+        movieLengthCol.setCellValueFactory(
+            new PropertyValueFactory<>("length")
+        );
+
+        TableColumn movieRatingCol = new TableColumn("Rating");
+        movieRatingCol.setMinWidth(100);
+        movieRatingCol.setCellValueFactory(
+                new PropertyValueFactory<>("rating")
+        );
+        
+        TableColumn<Movie, String > movieNrOfReviewsCol = new TableColumn<>("Nr Of Reviews");
+        movieNrOfReviewsCol.setMinWidth(100);
+        movieNrOfReviewsCol.setCellValueFactory(cellData -> {
+            ArrayList<Review> reviews = cellData.getValue().getReviews();
+            String nrOfReviewsString = Integer.toString(reviews.size());
+
+            return new ReadOnlyStringWrapper(nrOfReviewsString);
+        });
+        
+        movieTitleCol.prefWidthProperty().bind(movieTable.widthProperty().divide(6.02)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
+        movieTitleCol.setStyle("-fx-alignment: CENTER;");
+        releaseYearCol.prefWidthProperty().bind(movieTable.widthProperty().divide(6.02));
+        releaseYearCol.setStyle("-fx-alignment: CENTER;");
+        directorCol.prefWidthProperty().bind(movieTable.widthProperty().divide(10.03));
+        directorCol.setStyle("-fx-alignment: CENTER;");
+        movieGenreCol.prefWidthProperty().bind(movieTable.widthProperty().divide(6.02));
+        movieGenreCol.setStyle("-fx-alignment: CENTER;");
+        movieLengthCol.prefWidthProperty().bind(movieTable.widthProperty().divide(10.03));
+        movieLengthCol.setStyle("-fx-alignment: CENTER;");
+        movieRatingCol.prefWidthProperty().bind(movieTable.widthProperty().divide(10.03));
+        movieRatingCol.setStyle("-fx-alignment: CENTER;");
+        movieNrOfReviewsCol.prefWidthProperty().bind(movieTable.widthProperty().divide(10.03));
+        movieNrOfReviewsCol.setStyle("-fx-alignment: CENTER;");
+        
+        //Makes rows clickable
+        movieTable.setRowFactory( tv -> {
+            TableRow<Movie> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Movie rowData = row.getItem();
+                    if(rowData.getReviews() != null) {
+                        ArrayList<Review> reviewData = ac.getReviews(rowData.getMovieID());
+                        reviewTable.setItems(FXCollections.observableArrayList(reviewData));
+                        border.setCenter(reviewTable);
+                    }
+                }
+            });
+            return row;
+        });
+        
+        movieTable.setItems(movies);
+        movieTable.getColumns().addAll(movieTitleCol, releaseYearCol, directorCol, 
+                movieGenreCol, movieLengthCol, movieRatingCol, movieNrOfReviewsCol);
     }
     
     /**
