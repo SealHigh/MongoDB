@@ -485,22 +485,6 @@ public class AlbumCollection implements DBQueries {
         }
         return movies;
     }
-    
-    private Movie createMovieFromResultSet(ResultSet movie){
-        Movie tempMovie = null;
-        try {
-            Director director = getDirector(movie.getInt("movieId"));
-            ArrayList<String> genres = getGenres(movie.getInt("movieId"));
-            
-            tempMovie = new Movie(movie.getInt("movieId"), movie.getString("title"), director, genres,
-                    movie.getString("releaseYear"),  movie.getString("lengthMinutes"), getMovieRating(movie.getInt("movieId")));
-        }
-        catch (Exception e){
-
-        }
-        return tempMovie;
-
-    }
 
     /**
      * @return the loggedInUser

@@ -71,56 +71,55 @@ public class MovieCollection implements DBQueries {
         return number > 0;
     }
 
-    private Album createAlbumFromResultSet(ResultSet album){
-        Album tempAlbum = null;
+    private Movie createMovieFromResultSet(ResultSet movie){
+        Movie tempMovie = null;
         try {
-            ArrayList<Artist> artists = getArtists(album.getInt("albumId"));
-            ArrayList<String> genres = getGenres(album.getInt("albumId"));
+            Director director = getDirector(movie.getInt("movieId"));
+            ArrayList<String> genres = getGenres(movie.getInt("movieId"));
             
-            tempAlbum = new Album(album.getInt("albumId"), album.getString("title"), artists, genres,
-                    album.getString("releaseDate"),  album.getString("lengthMinutes"),  album.getInt("nrOfSongs"), getAlbumRating(album.getInt("albumId")));
+            tempMovie = new Movie(movie.getInt("movieId"), movie.getString("title"), director, genres,
+                    movie.getString("releaseYear"),  movie.getString("lengthMinutes"), getMovieRating(movie.getInt("movieId")));
         }
         catch (Exception e){
 
         }
-        return tempAlbum;
-
+        return tempMovie;
     }
 
-    public void setAlbumRating(int rating, String comment, int albumID) throws Exception{
+    public void setMovieRating(int rating, String comment, int movieID) throws Exception {
 
-            String sql = "INSERT INTO t_review(rating, userComment, albumID, userID) VALUES(?,?,?,?)";
-            PreparedStatement addAlbumRating = conn.prepareStatement(sql);
-            addAlbumRating.setInt(1,rating);
-            addAlbumRating.setString(2, comment);
-            addAlbumRating.setInt(3, albumID);
-            addAlbumRating.setInt(4, loggedInUser.getUserId());
-            System.out.println(albumID + "  " + loggedInUser.getUserId() + "  "+ rating);
-            addAlbumRating.execute();
+            String sql = "INSERT INTO t_review_movie (rating, userComment, movieID, userID) VALUES(?,?,?,?)";
+            PreparedStatement addMovieRating = conn.prepareStatement(sql);
+            addMovieRating.setInt(1,rating);
+            addMovieRating.setString(2, comment);
+            addMovieRating.setInt(3, movieID);
+            addMovieRating.setInt(4, loggedInUser.getUserId());
+            System.out.println(movieID + "  " + loggedInUser.getUserId() + "  "+ rating);
+            addMovieRating.execute();
 
     }
 
 
     @Override
     public void insertRecord(Object o) throws ParseException {
-        Album album = (Album)o;
+        Movie movie = (Movie)o;
         try {
 
             conn.setAutoCommit(false);//Transaction, dont want to add album if anything goes wrong with artist or genre and viceversa
 
-            String call = "{call insertAlbum(?,?,?,?,?)}";
-            CallableStatement insertAlbum = conn.prepareCall(call);
-            insertAlbum.registerOutParameter(1, Types.INTEGER);
-            insertAlbum.setString(2, album.getTitle());
-            insertAlbum.setInt(3, album.getNumberOfSongs());
-            insertAlbum.setInt(4, Integer.parseInt(album.getLength()));
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-            insertAlbum.setDate(5, new Date(format.parse(album.getReleaseDate()).getTime()));
-            insertAlbum.execute();
-            int ID = insertAlbum.getInt(1); //The id of the new album for adding artist and genre
+            String call = "{call insertMovie(?,?,?,?,?)}";
+            CallableStatement insertMovie = conn.prepareCall(call);
+            insertMovie.registerOutParameter(1, Types.INTEGER);
+            insertMovie.setString(2, movie.getTitle());
+            insertMovie.setInt(3, movie.getNumberOfSongs()); //Byta till director?
+            insertMovie.setInt(4, Integer.parseInt(movie.getLength()));
+            SimpleDateFormat format = new SimpleDateFormat("yyyy");
+            insertMovie.setDate(5, new Date(format.parse(movie.getReleaseYear()).getTime()));
+            insertMovie.execute();
+            int ID = insertMovie.getInt(1); //The id of the new album for adding artist and genre
 
             //Adds artist to t_artits and connects artist ID with album ID in connection table
-            call = "{call insertArtist(?,?,?)}";
+            call = "{call insert(?,?,?)}";
             CallableStatement insertArtist = conn.prepareCall(call);
             for (Artist artist: album.getArtists()
                  ) {
@@ -131,10 +130,10 @@ public class MovieCollection implements DBQueries {
             }
 
             String sql = "INSERT INTO t_genre VALUES(?,?)";
-            PreparedStatement addAlbumGenre = conn.prepareStatement(sql);
-            addAlbumGenre.setInt(1, ID);
-            addAlbumGenre.setString(2, album.getGenreAsString());
-            addAlbumGenre.execute();
+            PreparedStatement addMovieGenre = conn.prepareStatement(sql);
+            addMovieGenre.setInt(1, ID);
+            addMovieGenre.setString(2, movie.getGenreAsString());
+            addMovieGenre.execute();
 
             conn.commit();
 
