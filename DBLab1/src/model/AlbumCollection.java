@@ -323,7 +323,7 @@ public class AlbumCollection implements DBQueries {
         }
         return albums;
     }
-    @Override
+    @Override//a
     public ArrayList<Album>  searchRating(String rating){
         ArrayList<Album> albums = new ArrayList<>();
         Statement stmt = null;
