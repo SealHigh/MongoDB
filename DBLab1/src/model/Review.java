@@ -4,29 +4,28 @@ package model;
 
 public class Review {
     
-    private User user;
+    private String user;
     private int rating;
     private String comment;
-    private Album album;
+
     
-    public Review (int rating, String comment, Album album, User user) {
+    public Review (int rating, String comment, String user) {
         this.rating = rating;
         this.comment = comment;
-        this.album = album;
         this.user = user;
     }
 
     /**
      * @return the user
      */
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
     /**
      * @param user the user to set
      */
-    public void setUser(User user) {
+    public void setUser(String user) {
         this.user = user;
     }
 
@@ -58,18 +57,6 @@ public class Review {
         this.comment = comment;
     }
 
-    /**
-     * @return the album
-     */
-    public Album getAlbum() {
-        return album;
-    }
 
-    /**
-     * @param album the album to set
-     */
-    public void setAlbum(Album album) {
-        this.album = album;
-    }
     
 }

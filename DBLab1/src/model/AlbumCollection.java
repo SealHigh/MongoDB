@@ -205,6 +205,37 @@ public class AlbumCollection implements DBQueries {
     }
 
     @Override
+    public ArrayList<Review> getReviews(int albumID){
+
+        ArrayList<Review> reviews = new ArrayList<>();
+        ResultSet review = null;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            String sql = "SELECT userName, rating, userComment FROM t_review t1\n" +
+                    "INNER JOIN t_user t2 ON t1.userId = t2.userId\n" +
+                    "WHERE albumId = ?";
+            PreparedStatement getReviews = conn.prepareStatement(sql);
+            getReviews.setInt(1, albumID);
+            getReviews.execute();
+            review = getReviews.getResultSet();
+
+            while (review.next()) {
+                Review temp = new Review(review.getInt("rating"), review.getString("userComment"), review.getString("userName"));
+                reviews.add(temp);
+            }
+        }
+        catch (Exception e){
+
+        }
+        finally {
+            try { if (review != null) review.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+        }
+        return reviews;
+    }
+
+    @Override
     public ArrayList<Artist> getArtists(int albumID){
         
         ArrayList<Artist> artists = new ArrayList<>();

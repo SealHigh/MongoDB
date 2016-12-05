@@ -29,6 +29,9 @@ public interface DBQueries {
 
     ArrayList<Artist> getArtists(int albumID);
 
+    ArrayList<Review> getReviews(int albumID);
+
+
     ArrayList<String> getGenres(int albumID);
 
     <T> ArrayList<T> searchTitle(String title);

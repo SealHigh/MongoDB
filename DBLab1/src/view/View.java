@@ -314,16 +314,17 @@ public class View {
         //Create TableView
         reviewTable = new TableView<>();
         ArrayList<Review> emptyList = new ArrayList<>();
-        ObservableList<Review> reviews = FXCollections.observableArrayList(emptyList);
+
+        //ac.getReviews retrieves all reviews for selected albumID
+        System.out.println(ac.getReviews(1).get(0).getComment());
+
+        ObservableList<Review> reviews = FXCollections.observableArrayList(ac.getReviews(1));
         
         TableColumn<Review, String > userCol = new TableColumn<>("User");
         userCol.setMinWidth(100);
-        userCol.setCellValueFactory(cellData -> {
-            User user = cellData.getValue().getUser();
-            String userAsString = user.getUserName();
-
-            return new ReadOnlyStringWrapper(userAsString);
-        });
+        userCol.setCellValueFactory(
+            new PropertyValueFactory<>("user")
+        );
         
         TableColumn ratingCol = new TableColumn("Rating");
         ratingCol.setMinWidth(100);
@@ -427,10 +428,7 @@ public class View {
                     ReviewInfo ri = result.get();
                     String rating = ri.getRating();
                     String comment = ri.getComment();
-                    con.handleAddReviewEvent(slectedAlbum, rating, comment);
-                    //con.handleQueryEvent(rating, userInput); //try-catch här för om inget resultat?
                     addReviewDialog.clearFields();
-                    Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
                     con.handleReviewAlbumEvent(slectedAlbum.getAlbumID(), Integer.parseInt(rating), comment);
                 }
             }
