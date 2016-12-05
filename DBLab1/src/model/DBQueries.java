@@ -11,7 +11,8 @@ import java.util.Observer;
 public interface DBQueries {
 
 
-    void updateDB(String statement);
+    boolean userLogIn(String userName, String password);
+
     /**
      * Retrivies all records in the database
      * @param <T>

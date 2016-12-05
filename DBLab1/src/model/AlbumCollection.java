@@ -5,7 +5,6 @@ package model;
 
 import java.sql.*;
 import java.sql.Date;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -19,6 +18,7 @@ public class AlbumCollection implements DBQueries {
         conn =  ConnectionConfiguration.getConnection(); //star connection for session
     }
 
+    @Override
     public boolean userLogIn(String userName, String password) {
         
         int number = 0;
@@ -147,9 +147,14 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public void deleteRecord(Object o) {
+        Album album = (Album)o;
         try {
-            Album album = (Album)o;
-           updateDB("DELETE FROM t_album WHERE albumID =" + album.getAlbumID());
+            String sql = "DELETE FROM t_album WHERE albumID = ?";
+            PreparedStatement deleteAlbum = conn.prepareStatement(sql);
+            deleteAlbum.setInt(1, album.getAlbumID());
+            deleteAlbum.execute();
+
+
         } catch (Exception e) {
 
         }
@@ -263,26 +268,13 @@ public class AlbumCollection implements DBQueries {
 
 
     @Override
-    public void updateDB(String statement){
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
-            stmt.executeUpdate(statement);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-        }
-    }
-
-    @Override
     public ArrayList<Album> getAllRecords() {
-        
+
         ArrayList<Album> albums = new ArrayList<>();
         ResultSet album = null;
         Statement stmt = null;
         try {
+            //We dont need transation here since its only select calls
             stmt = conn.createStatement();
             album = stmt.executeQuery("SELECT * FROM t_album");
 
