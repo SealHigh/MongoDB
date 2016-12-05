@@ -187,6 +187,29 @@ public class AlbumCollection implements DBQueries {
         }
         return rating;
     }
+    
+    @Override
+    public int getMovieRating(int albumId){
+        int rating= 0;
+        ResultSet rs = null;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("select AVG(rating) from t_review where albumId = '"+ albumId +"'");
+
+            if(rs.next())
+                rating = rs.getInt("AVG(rating)");
+
+        }
+        catch (Exception e){
+
+        }
+        finally {
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+        }
+        return rating;
+    }
 
     @Override
     public void rateAlbum(Object o){
@@ -270,7 +293,30 @@ public class AlbumCollection implements DBQueries {
         return artists;
     }
 
+    @Override
+    public Director getDirector(int albumID){
+        
+        Director director;
+        ResultSet rs = null;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT artistName, nationality FROM t_artist WHERE artistID IN " +
+                    "(SELECT  artistID FROM ct_album_artist WHERE albumID ='" + albumID +"')");                  
+            while (rs.next()) {
+                Director temp = new Director(rs.getString("artistName"), rs.getString("nationality"));
+                director = temp;
+            }
+        }
+        catch (Exception e){
 
+        }
+        finally {
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+        }
+        return director;
+    }
 
     @Override
     public ArrayList<Album> getAllRecords() {

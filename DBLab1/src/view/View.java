@@ -39,7 +39,6 @@ public class View {
     private TableView<Review> reviewTable;
     private TableView<Movie> movieTable;
     private BorderPane border;
-    private Scene singleAlbumScene;
     private FlowPane bottomPane;
     private FlowPane loggedInPane;
     private MenuBar menuBar;
@@ -123,6 +122,18 @@ public class View {
                 con.handleDeleteAlbumEvent(slectedAlbum);
             }
         });
+        
+        Button switchViewButton = new Button("Switch Albums/Movies");
+        switchViewButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (border.getCenter() != mainTable) {
+                    border.setCenter(mainTable);
+                } else {
+                    border.setCenter(movieTable);
+                }
+            }
+        });
 
         //Create menu option 'File' and sub menus 'Open File', 'Save File'
         //and 'Exit'
@@ -184,7 +195,7 @@ public class View {
         //Create FlowPane to hold buttons at bottom and add buttons
         bottomPane = new FlowPane();
         bottomPane.setHgap(20);
-        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton, deleteButton);
+        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton, deleteButton, switchViewButton);
         bottomPane.setAlignment(Pos.CENTER);
         bottomPane.setPrefHeight(50);
         
@@ -435,10 +446,22 @@ public class View {
             }
         });
         
+        Button lIswitchViewButton = new Button("Switch Albums/Movies");
+        lIswitchViewButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (border.getCenter() != mainTable) {
+                    border.setCenter(mainTable);
+                } else {
+                    border.setCenter(movieTable);
+                }
+            }
+        });
+        
         //Create FlowPane loggedInPane
         loggedInPane = new FlowPane();
         loggedInPane.setHgap(20);
-        loggedInPane.getChildren().addAll(lIaddAlbumButton, lIsearchAlbumsButton, lIviewAllAlbumsButton, lIrateButton, lIdeleteButton);
+        loggedInPane.getChildren().addAll(lIaddAlbumButton, lIsearchAlbumsButton, lIviewAllAlbumsButton, lIrateButton, lIdeleteButton, lIswitchViewButton);
         loggedInPane.setAlignment(Pos.CENTER);
         loggedInPane.setPrefHeight(50);
         

@@ -29,6 +29,8 @@ public interface DBQueries {
     void rateAlbum(Object o);
 
     int getAlbumRating(int albumId);
+    
+    int getMovieRating(int albumId);
 
     ArrayList<Artist> getArtists(int albumID);
 
@@ -39,6 +41,8 @@ public interface DBQueries {
     <T> ArrayList<T> searchTitle(String title);
 
     <T> ArrayList<T> searchArtist(String title);
+    
+    Director getDirector(int albumID);
 
     <T> ArrayList<T> searchGenre(String title);
 
