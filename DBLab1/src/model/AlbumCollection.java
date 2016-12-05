@@ -88,15 +88,15 @@ public class AlbumCollection implements DBQueries {
             DatabaseMetaData meta = conn.getMetaData();
 
 // Listing all stored procedures
-            ResultSet res = meta.getProcedures(null, "HERONG", "%");
-            System.out.println("Stored procedures:");
-            while (res.next()) {
-                System.out.println(
-                        "   "+res.getString("PROCEDURE_CAT")
-                                + ", "+res.getString("PROCEDURE_SCHEM")
-                                + ", "+res.getString("PROCEDURE_NAME"));
-            }
-            res.close();
+//            ResultSet res = meta.getProcedures(null, "HERONG", "%");
+//            System.out.println("Stored procedures:");
+//            while (res.next()) {
+//                System.out.println(
+//                        "   "+res.getString("PROCEDURE_CAT")
+//                                + ", "+res.getString("PROCEDURE_SCHEM")
+//                                + ", "+res.getString("PROCEDURE_NAME"));
+//            }
+//            res.close();
             conn.setAutoCommit(false);
             String call = "{call insertAlbum(?,?,?,?,?)}";
             CallableStatement insertAlbum = conn.prepareCall(call);
@@ -109,6 +109,23 @@ public class AlbumCollection implements DBQueries {
             insertAlbum.execute();
             int ID = insertAlbum.getInt(1); //The id of the new album for adding artist and genre
             System.out.println(ID);
+
+            //Adds artist to t_artits and connects artist ID with album ID in connection table
+            call = "{call insertArtist(?,?,?)}";
+            CallableStatement insertArtist = conn.prepareCall(call);
+            for (Artist artist: album.getArtists()
+                 ) {
+                insertArtist.setInt(1, ID);
+                insertArtist.setString(2, artist.getName());
+                insertArtist.setString(3, artist.getNationality());
+                insertArtist.execute();
+            }
+
+            String sql = "INSERT INTO t_genre VALUES(?,?)";
+            PreparedStatement addAlbumGenre = conn.prepareStatement(sql);
+            addAlbumGenre.setInt(1, ID);
+            addAlbumGenre.setString(2, album.getGenreAsString());
+            addAlbumGenre.execute();
 
 
 
