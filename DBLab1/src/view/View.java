@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 import javafx.beans.property.ReadOnlyStringWrapper;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,16 +14,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.*;
-
-import javax.swing.*;
-
 
 public class View {
 
@@ -169,7 +164,7 @@ public class View {
         //Create FlowPane to hold buttons at bottom and add buttons
         bottomPane = new FlowPane();
         bottomPane.setHgap(20);
-        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton, deleteButton, switchViewButton);
+        bottomPane.getChildren().addAll(searchAlbumsButton, viewAllAlbumsButton, deleteButton, switchViewButton);
         bottomPane.setAlignment(Pos.CENTER);
         bottomPane.setPrefHeight(50);
         
@@ -535,11 +530,11 @@ public class View {
             return new ReadOnlyStringWrapper(nrOfReviewsString);
         });
         
-        movieTitleCol.prefWidthProperty().bind(movieTable.widthProperty().divide(6.02)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
+        movieTitleCol.prefWidthProperty().bind(movieTable.widthProperty().divide(4.72)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
         movieTitleCol.setStyle("-fx-alignment: CENTER;");
-        releaseYearCol.prefWidthProperty().bind(movieTable.widthProperty().divide(6.02));
+        releaseYearCol.prefWidthProperty().bind(movieTable.widthProperty().divide(10.02));
         releaseYearCol.setStyle("-fx-alignment: CENTER;");
-        directorCol.prefWidthProperty().bind(movieTable.widthProperty().divide(10.03));
+        directorCol.prefWidthProperty().bind(movieTable.widthProperty().divide(4.72));
         directorCol.setStyle("-fx-alignment: CENTER;");
         movieGenreCol.prefWidthProperty().bind(movieTable.widthProperty().divide(6.02));
         movieGenreCol.setStyle("-fx-alignment: CENTER;");

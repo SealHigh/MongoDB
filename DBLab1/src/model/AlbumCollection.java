@@ -307,7 +307,7 @@ public class AlbumCollection implements DBQueries {
     @Override
     public Director getDirector(int albumID){
         
-        Director director;
+        Director director = new Director("","");
         ResultSet rs = null;
         Statement stmt = null;
         try {
