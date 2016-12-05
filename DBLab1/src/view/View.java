@@ -88,14 +88,6 @@ public class View {
             }
         });
 
-        Button deleteButton = new Button("Delete");
-        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
-                con.handleDeleteAlbumEvent(slectedAlbum);
-            }
-        });
         
         Button switchViewButton = new Button("Switch Albums/Movies");
         switchViewButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -169,7 +161,7 @@ public class View {
         //Create FlowPane to hold buttons at bottom and add buttons
         bottomPane = new FlowPane();
         bottomPane.setHgap(20);
-        bottomPane.getChildren().addAll(addAlbumButton, searchAlbumsButton, viewAllAlbumsButton, deleteButton, switchViewButton);
+        bottomPane.getChildren().addAll( searchAlbumsButton, viewAllAlbumsButton, switchViewButton);
         bottomPane.setAlignment(Pos.CENTER);
         bottomPane.setPrefHeight(50);
         
