@@ -31,6 +31,7 @@ public class View {
     private QueryDialog queryDialog;
     private AddDialog addDialog;
     private LogInDialog logInDialog;
+    private AddReviewDialog addReviewDialog;
     private Stage primaryStage;
     private Scene scene;
     private TableView<Album> mainTable;
@@ -50,6 +51,7 @@ public class View {
         queryDialog = new QueryDialog();
         addDialog = new AddDialog();
         logInDialog = new LogInDialog();
+        addReviewDialog = new AddReviewDialog();
         //sbd = new SearchBooksDialog(primaryStage);
         
         border = new BorderPane();
@@ -430,6 +432,16 @@ public class View {
         lIrateButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                Optional<ReviewInfo> result
+                        = addReviewDialog.showAndWait();
+                if (result.isPresent()) {
+                    ReviewInfo ri = result.get();
+                    String rating = ri.getRating();
+                    String comment = ri.getComment();
+                    //con.handleQueryEvent(rating, userInput); //try-catch här för om inget resultat?
+                    addReviewDialog.clearFields();
+                }
+                
                 Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
                 con.handleDeleteAlbumEvent(slectedAlbum);
             }
@@ -459,7 +471,7 @@ public class View {
                 if (result.isPresent() && result.get() == ButtonType.OK) {
                     con.handleLogOutEvent();
                     border.setBottom(bottomPane);
-                    border.setTop(lImenuBar);
+                    border.setTop(menuBar);
                 }
             }
         });
