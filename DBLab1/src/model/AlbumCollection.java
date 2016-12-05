@@ -82,7 +82,7 @@ public class AlbumCollection implements DBQueries {
     public void setAlbumRating(int rating, String comment, int albumID){
         try {
 
-            String sql = "INSERT INTO t_review(rating, comment, albumID, userID) VALUES(?,?,?,?)";
+            String sql = "INSERT INTO t_review(rating, userComment, albumID, userID) VALUES(?,?,?,?)";
             PreparedStatement addAlbumRating = conn.prepareStatement(sql);
             addAlbumRating.setInt(1,rating);
             addAlbumRating.setString(2, comment);

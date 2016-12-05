@@ -22,20 +22,51 @@ public class Controller {
     }
 
     public void handleDeleteAlbumEvent(Album selectedAlbum) {
-        ac.deleteRecord(selectedAlbum);
-        view.updateTextArea(ac.getAllRecords());
+        new Thread() {
+            public void run() {
+                ac.deleteRecord(selectedAlbum);
+                ArrayList<Album>  albums = ac.getAllRecords();
+                javafx.application.Platform.runLater(
+                        new Runnable() {
+                            public void run() {
+                                view.updateTextArea(albums);
+                            }
+                        });
+            }
+        }.start();
+
     }
     public void handleReviewAlbumEvent(int albumID, int rating, String comment) {
-        ac.setAlbumRating(rating,comment,albumID);
-        view.updateTextArea(ac.getAllRecords());
+        new Thread() {
+            public void run() {
+                ac.setAlbumRating(rating,comment,albumID);
+                ArrayList<Album> albums = ac.getAllRecords();
+                javafx.application.Platform.runLater(
+                        new Runnable() {
+                            public void run() {
+                                view.updateTextArea(albums);
+                            }
+                        });
+            }
+        }.start();
     }
 
 
     public void handleGetAllAlbumsEvent() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "handleGetAllAlbumsEvent körs");
                 alert.setTitle("");
-                alert.setHeaderText(null);      
-        view.updateTextArea(ac.getAllRecords());
+                alert.setHeaderText(null);
+        new Thread() {
+            public void run() {
+                ArrayList<Album> albums = ac.getAllRecords();
+                javafx.application.Platform.runLater(
+                        new Runnable() {
+                            public void run() {
+                                view.updateTextArea(albums);
+                            }
+                        });
+            }
+        }.start();
         
     }
 
@@ -43,13 +74,54 @@ public class Controller {
         System.out.println(searchOption.toString());
 
         switch (searchOption.toString()){
-            case "title":   view.updateTextArea(ac.searchTitle(userInput));
+            case "title":  new Thread() {
+                                public void run() {
+                                    ArrayList<Album> albums = ac.searchTitle(userInput);
+                                    javafx.application.Platform.runLater(
+                                            new Runnable() {
+                                                public void run() {
+                                                    view.updateTextArea(albums);
+                                                }
+                                            });
+                                }
+                            }.start();
                             break;
-            case "artist":  view.updateTextArea(ac.searchArtist(userInput));
+            case "artist":  new Thread() {
+                                public void run() {
+                                    ArrayList<Album> albums =ac.searchArtist(userInput);;
+                                    javafx.application.Platform.runLater(
+                                            new Runnable() {
+                                                public void run() {
+                                                    view.updateTextArea(albums);
+                                                }
+                                            });
+                                }
+                            }.start();
                             break;
-            case "genre":   view.updateTextArea(ac.searchGenre(userInput));
+
+            case "genre":  new Thread() {
+                                public void run() {
+                                    ArrayList<Album> albums =ac.searchGenre(userInput);;
+                                    javafx.application.Platform.runLater(
+                                            new Runnable() {
+                                                public void run() {
+                                                    view.updateTextArea(albums);
+                                                }
+                                            });
+                                }
+                            }.start();
                             break;
-            case "rating":  view.updateTextArea(ac.searchRating(userInput));
+            case "rating":  new Thread() {
+                                public void run() {
+                                    ArrayList<Album> albums =ac.searchRating(userInput);
+                                    javafx.application.Platform.runLater(
+                                            new Runnable() {
+                                                public void run() {
+                                                    view.updateTextArea(albums);
+                                                }
+                                            });
+                                }
+                            }.start();
                             break;
         }
          //Searchoption.TITLE is hardcoded temporary since i coded using Enum so gotta change one
@@ -59,9 +131,8 @@ public class Controller {
 //        alert.showAndWait();
     }
     
-    public void handleAddAlbumEvent(String title, String artists, String releaseDate, 
-            String nrOfSongs, String length, String genres) throws  NumberFormatException{
-        //ac.addAlbum(new Album(Name)); //INte klar - fortsätt!!
+    public void handleAddAlbumEvent(String title, String artists, String releaseDate,
+                                    String nrOfSongs, String length, String genres) throws  NumberFormatException{
 
         //This is temporary for a quick test
         ArrayList<String> genre = new ArrayList<>();
@@ -71,22 +142,28 @@ public class Controller {
         artist.add(a1);
         /////////////////////////////////////////////
 
-        ac.insertRecord(new Album(genre,title,artist,releaseDate,length,Integer.parseInt(nrOfSongs))); //This adds it directly to the database
-        view.updateTextArea(ac.getAllRecords());
+        new Thread() {
+            public void run() {
+                ac.insertRecord(new Album(genre,title,artist,releaseDate,length,Integer.parseInt(nrOfSongs)));
+                ArrayList<Album> albums =  ac.getAllRecords();
+                javafx.application.Platform.runLater(
+                        new Runnable() {
+                            public void run() {
+                                view.updateTextArea(albums);
+                            }
+                        });
+            }
+        }.start();
+    }
 
-    }
-    
-    public void handleAddReviewEvent(Album slectedAlbum, String rating, String comment) {
-        //Parse to int
-        //add -> ac.getLoggedInUser().getUserId() and send to modell 
-    }
-    
+
+
     public boolean handleLogInEvent(String userName, String password) {
-        return ac.userLogIn(userName,password);
+        return ac.userLogIn(userName,password); //Maybe run this in thread aswell?
     }
     
     public void handleLogOutEvent() {
-        ac.setLoggedInUser(null);
+        ac.setLoggedInUser(null);//Maybe run this in thread aswell?
     }
 
     

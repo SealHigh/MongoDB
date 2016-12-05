@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Font;
@@ -264,10 +265,10 @@ public class View {
         mainTable.setRowFactory( tv -> {
             TableRow<Album> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (!row.isEmpty()) {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Album rowData = row.getItem();
                     if(rowData.getReviews() != null) {
-                        ArrayList<Review> reviewData = rowData.getReviews();
+                        ArrayList<Review> reviewData = ac.getReviews(rowData.getAlbumID());
                         reviewTable.setItems(FXCollections.observableArrayList(reviewData));
                         border.setCenter(reviewTable);
                     }
@@ -315,10 +316,8 @@ public class View {
         reviewTable = new TableView<>();
         ArrayList<Review> emptyList = new ArrayList<>();
 
-        //ac.getReviews retrieves all reviews for selected albumID
-        System.out.println(ac.getReviews(1).get(0).getComment());
 
-        ObservableList<Review> reviews = FXCollections.observableArrayList(ac.getReviews(1));
+        ObservableList<Review> reviews = FXCollections.observableArrayList(emptyList);
         
         TableColumn<Review, String > userCol = new TableColumn<>("User");
         userCol.setMinWidth(100);
