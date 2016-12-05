@@ -79,25 +79,31 @@ public class AlbumCollection implements DBQueries {
 
     }
 
+    public void setAlbumRating(int rating, int albumID){
+        try {
+
+            String sql = "INSERT INTO t_rating(albumID, userID, rating) VALUES(?,?,?)";
+            PreparedStatement addAlbumRating = conn.prepareStatement(sql);
+            addAlbumRating.setInt(1,albumID);
+            addAlbumRating.setInt(2, loggedInUser.getUserId());
+            addAlbumRating.setInt(3, rating);
+            System.out.println(albumID + "  " + loggedInUser.getUserId() + "  "+ rating);
+            addAlbumRating.execute();
+
+        } catch (Exception e) {
+
+        }
+
+    }
+
+
     @Override
     public void insertRecord(Object o) {
         Album album = (Album)o;
         try {
 
+            conn.setAutoCommit(false);//Transaction, dont want to add album if anything goes wrong with artist or genre and viceversa
 
-            DatabaseMetaData meta = conn.getMetaData();
-
-// Listing all stored procedures
-//            ResultSet res = meta.getProcedures(null, "HERONG", "%");
-//            System.out.println("Stored procedures:");
-//            while (res.next()) {
-//                System.out.println(
-//                        "   "+res.getString("PROCEDURE_CAT")
-//                                + ", "+res.getString("PROCEDURE_SCHEM")
-//                                + ", "+res.getString("PROCEDURE_NAME"));
-//            }
-//            res.close();
-            conn.setAutoCommit(false);
             String call = "{call insertAlbum(?,?,?,?,?)}";
             CallableStatement insertAlbum = conn.prepareCall(call);
             insertAlbum.registerOutParameter(1, Types.INTEGER);
@@ -108,7 +114,6 @@ public class AlbumCollection implements DBQueries {
             insertAlbum.setDate(5, new Date(format.parse(album.getReleaseDate()).getTime()));
             insertAlbum.execute();
             int ID = insertAlbum.getInt(1); //The id of the new album for adding artist and genre
-            System.out.println(ID);
 
             //Adds artist to t_artits and connects artist ID with album ID in connection table
             call = "{call insertArtist(?,?,?)}";
@@ -127,11 +132,10 @@ public class AlbumCollection implements DBQueries {
             addAlbumGenre.setString(2, album.getGenreAsString());
             addAlbumGenre.execute();
 
-
-
             conn.commit();
 
         } catch (Exception e) {
+            try {if(conn != null) conn.rollback();} catch (Exception ex){}
             e.printStackTrace();
             //conn.rollback(); ?
         }

@@ -25,6 +25,11 @@ public class Controller {
         ac.deleteRecord(selectedAlbum);
         view.updateTextArea(ac.getAllRecords());
     }
+    public void handleRateAlbumEvent(int albumID, int rating) {
+        ac.setAlbumRating(albumID, rating );
+        view.updateTextArea(ac.getAllRecords());
+    }
+
 
     public void handleGetAllAlbumsEvent() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "handleGetAllAlbumsEvent körs");
