@@ -27,7 +27,11 @@ public class Controller {
     }
 
     public void handleGetAllAlbumsEvent() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "handleGetAllAlbumsEvent körs");
+                alert.setTitle("");
+                alert.setHeaderText(null);      
         view.updateTextArea(ac.getAllRecords());
+        
     }
 
     public void handleQueryEvent(SearchOptions searchOption, String userInput) {
