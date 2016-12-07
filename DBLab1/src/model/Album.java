@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Album {
 
-    private int albumID;
+    private String albumID;
     private ArrayList<String> genres;
     private ArrayList<Artist> artists;
     private String title;   
@@ -20,7 +20,7 @@ public class Album {
     public Album (String title) { //Just for testing
         this.title = title;
     }
-    public Album (int albumID, String title, ArrayList<Artist> artists, ArrayList<String> genres,
+    public Album (String albumID, String title, ArrayList<Artist> artists, ArrayList<String> genres,
                   String releaseDate, String length, int numberOfSongs, int rating) {
         this.albumID = albumID;
         this.genres = genres;
@@ -46,7 +46,8 @@ public class Album {
                 this.genreAsString = genreToString();
                 reviews = new ArrayList<>();
     }
-    
+
+
     public float getRating () {
         
         return rating;
@@ -56,13 +57,13 @@ public class Album {
      *
      * @return the albumID
      */
-    public int getAlbumID(){return albumID;}
+    public String getAlbumID(){return albumID;}
 
     /**
      * Set albumID
      * @param albumID
      */
-    public void setAlbumID(int albumID){this.albumID = albumID;}
+    public void setAlbumID(String albumID){this.albumID = albumID;}
 
 
     /**

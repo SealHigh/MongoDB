@@ -39,7 +39,7 @@ public class Controller {
         }.start();
 
     }
-    public void handleReviewAlbumEvent(int albumID, int rating, String comment) {
+    public void handleReviewAlbumEvent(String albumID, int rating, String comment) {
         new Thread() {
             public void run() {
                 try {

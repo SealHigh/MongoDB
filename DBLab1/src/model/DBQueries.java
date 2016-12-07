@@ -20,8 +20,7 @@ public interface DBQueries {
      * @return a list of all the records
      */
     <T> ArrayList<T> getAllRecords();
-    
-    <T> ArrayList<T> getAllMovies();
+
 
     void insertRecord(Object o) throws ParseException;
 
@@ -29,21 +28,19 @@ public interface DBQueries {
 
     void rateAlbum(Object o);
 
-    int getAlbumRating(int albumId);
-    
-    int getMovieRating(int albumId);
+    int getAlbumRating(String albumId);
 
-    ArrayList<Artist> getArtists(int albumID);
+    ArrayList<Artist> getArtists(String albumID);
 
-    ArrayList<Review> getReviews(int albumID);
+    ArrayList<Review> getReviews(String albumID);
 
-    ArrayList<String> getGenres(int albumID);
+    ArrayList<String> getGenres(String albumID);
 
     <T> ArrayList<T> searchTitle(String title);
 
     <T> ArrayList<T> searchArtist(String title);
     
-    Director getDirector(int albumID);
+    Director getDirector(String albumID);
 
     <T> ArrayList<T> searchGenre(String title);
 

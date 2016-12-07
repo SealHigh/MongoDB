@@ -188,7 +188,7 @@ public class View {
         TableColumn genreCol = new TableColumn("Genre");
         genreCol.setMinWidth(100);
         genreCol.setCellValueFactory(
-            new PropertyValueFactory<>("genreAsString")
+            new PropertyValueFactory<>("albumID")
         );
         
         TableColumn lengthCol = new TableColumn("Length");
@@ -475,7 +475,8 @@ public class View {
     public void initMovieTableView() {
         //Create TableView
         movieTable = new TableView<>();
-        ObservableList<Movie> movies = FXCollections.observableArrayList(ac.getAllMovies());
+        ArrayList<Movie> empty = new ArrayList<>();
+        ObservableList<Movie> movies = FXCollections.observableArrayList(empty);
         
         TableColumn movieTitleCol = new TableColumn("Title");
         movieTitleCol.setMinWidth(100);
@@ -544,9 +545,9 @@ public class View {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Movie rowData = row.getItem();
                     if(rowData.getReviews() != null) {
-                        ArrayList<Review> reviewData = ac.getReviews(rowData.getMovieID());
-                        reviewTable.setItems(FXCollections.observableArrayList(reviewData));
-                        border.setCenter(reviewTable);
+//                        ArrayList<Review> reviewData = ac.getReviews(rowData.getMovieID());
+//                        reviewTable.setItems(FXCollections.observableArrayList(reviewData));
+//                        border.setCenter(reviewTable);
                     }
                 }
             });
