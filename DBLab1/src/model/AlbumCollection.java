@@ -5,6 +5,7 @@ package model;
 
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
 import java.sql.*;
@@ -21,9 +22,28 @@ public class AlbumCollection implements DBQueries {
     private LoggedInUser loggedInUser;
 
 
+    private void addToDatabase(MongoDatabase db){
+        Document albumDocument = new Document("title", "Test").append("nrOfSongs",34).append("releaseDate", 19940722).append("length",120);
+        ArrayList<Artist> artists = new ArrayList<>();
+
+        ArrayList<String> aritst = new ArrayList<>();
+        aritst.add("test");
+        aritst.add("test4");
+
+        albumDocument.append("artist", aritst);
+        MongoCollection<Document> collection = db.getCollection("Album");
+        collection.insertOne(albumDocument);
+    }
     private void firstRunDatabase(MongoDatabase db){
         db.createCollection("Album");
-        Document albumDocument = new Document("title", "Test");
+        Document albumDocument = new Document("title", "Test").append("nrOfSongs",34).append("releaseDate", 19940722).append("length",120);
+        ArrayList<Artist> artists = new ArrayList<>();
+
+        ArrayList<String> aritst = new ArrayList<>();
+        aritst.add("test");
+        aritst.add("test4");
+
+        albumDocument.append("artist", aritst);
         MongoCollection<Document> collection = db.getCollection("Album");
         collection.insertOne(albumDocument);
     }
@@ -36,7 +56,7 @@ public class AlbumCollection implements DBQueries {
     public ArrayList<Album> getAllRecords() {
         ArrayList<Album> albums = new ArrayList<>();
 
-        java.util.logging.Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
+        //java.util.logging.Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
         MongoClient mongoClient = new MongoClient();
         MongoDatabase db = mongoClient.getDatabase("Labb2");
 
@@ -44,21 +64,43 @@ public class AlbumCollection implements DBQueries {
         //firstRunDatabase(db);
 
         MongoCollection<Document> collection = db.getCollection("Album");
+        MongoCursor<Document> cursor = collection.find().iterator();
 
-        collection.find().forEach((Block<Document>) document -> {
-            //TODO: replace everything with document.get()
-            Album album = new Album(document.get("_id").toString(),document.get("title").toString(), new ArrayList<Artist>(), new ArrayList<String>(),
-                    "releaseDate", "length", 33, 3);
+        while(cursor.hasNext()){
+            ArrayList<Artist> artists = new ArrayList<>();
+            Document cur = cursor.next();
+            try {((List<String>) cur.get("artist")).forEach(a -> artists.add(new Artist(a, "Brit")));}catch (Exception e){}
+
+
+            Album album = new Album(cur.get("_id").toString(),cur.get("title").toString(),artists, new ArrayList<String>(),
+                    cur.get("releaseDate").toString(), cur.get("length").toString(), cur.get("nrOfSongs").toString(), "3");
             albums.add(album);
-        });
+        }
 
         return albums;
     }
 
     @Override
+    public void insertRecord(Object o) throws ParseException {
+        MongoClient mongoClient = new MongoClient();
+        MongoDatabase db = mongoClient.getDatabase("Labb2");
+        Album album = (Album)o;
+        ArrayList<String> artists = new ArrayList<>();
+        album.getArtists().forEach(artist -> artists.add(artist.getName()));
+        ArrayList<String> genre = album.getGenre();
+
+        Document albumDocument = new Document("title", album.getTitle()).append("nrOfSongs",album.getNumberOfSongs()).append(
+                "releaseDate", album.getReleaseDate()).append("length",album.getLength()).append("artist", artists).append("genre",genre );
+
+
+        MongoCollection<Document> collection = db.getCollection("Album");
+        collection.insertOne(albumDocument);
+    }
+
+    @Override
     public boolean userLogIn(String userName, String password) {
         
-        int number = 0;
+        int number = 1;
         return number > 0;
     }
 
@@ -68,10 +110,7 @@ public class AlbumCollection implements DBQueries {
     }
 
 
-    @Override
-    public void insertRecord(Object o) throws ParseException {
 
-    }
 
     @Override
     public void deleteRecord(Object o) {
