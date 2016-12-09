@@ -22,13 +22,13 @@ public class AlbumCollection implements DBQueries {
     private LoggedInUser loggedInUser;
     private MongoDatabase db = null;
     private MongoCollection albumCollection = null;
-    private MongoCollection artistCollection = null;
+    private MongoCollection userCollection = null;
 
     public AlbumCollection () {
         MongoClient mongoClient = new MongoClient();
         db = mongoClient.getDatabase("Labb2");//start connection for session
         albumCollection = db.getCollection("Album");
-        artistCollection = db.getCollection("Artist");
+        userCollection = db.getCollection("Users");
     }
 
     private void firstRunDatabase(MongoDatabase db){
@@ -78,31 +78,20 @@ public class AlbumCollection implements DBQueries {
     @Override
     public void insertRecord(Object o) throws ParseException {
         Album album = (Album)o;
+
         ArrayList<Document> artists = new ArrayList<>();
-        try {
         album.getArtists().forEach(artist -> artists.add(new Document("name",artist.getName()).append("nationality", artist.getNationality())));
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
 
         Document albumDocument = new Document("title", album.getTitle()).append("nrOfSongs",album.getNumberOfSongs()).append(
                 "releaseDate", album.getReleaseDate()).append("length",album.getLength()).append("artist", artists).append("genre",album.getGenre() );
 
-        try {
-            albumCollection.insertOne(albumDocument);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+        albumCollection.insertOne(albumDocument);
 
     }
 
     @Override
     public boolean userLogIn(String userName, String password) {
-        
-        int number = 1;
-        return number > 0;
+        return userCollection.find(new Document("userName", userName).append("password", password)).iterator().hasNext();
     }
 
 
