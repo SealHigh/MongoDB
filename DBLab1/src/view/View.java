@@ -188,7 +188,7 @@ public class View {
         TableColumn genreCol = new TableColumn("Genre");
         genreCol.setMinWidth(100);
         genreCol.setCellValueFactory(
-            new PropertyValueFactory<>("albumID")
+            new PropertyValueFactory<>("genreAsString")
         );
         
         TableColumn lengthCol = new TableColumn("Length");

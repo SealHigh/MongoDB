@@ -11,16 +11,25 @@ import com.mongodb.client.MongoDatabase;
 import java.sql.*;
 import java.text.ParseException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 public class AlbumCollection implements DBQueries {
 
     private Connection conn = null;
     private LoggedInUser loggedInUser;
+    private MongoDatabase db = null;
+    private MongoCollection albumCollection = null;
+    private MongoCollection artistCollection = null;
 
+    public AlbumCollection () {
+        MongoClient mongoClient = new MongoClient();
+        db = mongoClient.getDatabase("Labb2");//start connection for session
+        albumCollection = db.getCollection("Album");
+        artistCollection = db.getCollection("Artist");
+    }
 
     private void addToDatabase(MongoDatabase db){
         Document albumDocument = new Document("title", "Test").append("nrOfSongs",34).append("releaseDate", 19940722).append("length",120);
@@ -48,31 +57,17 @@ public class AlbumCollection implements DBQueries {
         collection.insertOne(albumDocument);
     }
 
-    public AlbumCollection () {
-        conn =  ConnectionConfiguration.getConnection(); //star connection for session
-    }
-
-    @Override
-    public ArrayList<Album> getAllRecords() {
+    private ArrayList<Album> docToAlbums(MongoCursor<Document> cursor){
         ArrayList<Album> albums = new ArrayList<>();
-
-        //java.util.logging.Logger.getLogger("org.mongodb.driver").setLevel(Level.OFF);
-        MongoClient mongoClient = new MongoClient();
-        MongoDatabase db = mongoClient.getDatabase("Labb2");
-
-        //  run this to create a database
-        //firstRunDatabase(db);
-
-        MongoCollection<Document> collection = db.getCollection("Album");
-        MongoCursor<Document> cursor = collection.find().iterator();
-
         while(cursor.hasNext()){
             ArrayList<Artist> artists = new ArrayList<>();
+            ArrayList<String> genre = new ArrayList<>();
             Document cur = cursor.next();
+
             try {((List<String>) cur.get("artist")).forEach(a -> artists.add(new Artist(a, "Brit")));}catch (Exception e){}
+            try {genre.addAll((List<String>)cur.get("genre"));}catch (Exception e){}
 
-
-            Album album = new Album(cur.get("_id").toString(),cur.get("title").toString(),artists, new ArrayList<String>(),
+            Album album = new Album(cur.get("_id").toString(),cur.get("title").toString(),artists, genre,
                     cur.get("releaseDate").toString(), cur.get("length").toString(), cur.get("nrOfSongs").toString(), "3");
             albums.add(album);
         }
@@ -80,21 +75,38 @@ public class AlbumCollection implements DBQueries {
         return albums;
     }
 
+
+    @Override
+    public ArrayList<Album> getAllRecords() {
+
+
+        MongoCursor<Document> cursor = albumCollection.find().iterator();
+        return docToAlbums(cursor);
+    }
+
     @Override
     public void insertRecord(Object o) throws ParseException {
-        MongoClient mongoClient = new MongoClient();
-        MongoDatabase db = mongoClient.getDatabase("Labb2");
         Album album = (Album)o;
         ArrayList<String> artists = new ArrayList<>();
-        album.getArtists().forEach(artist -> artists.add(artist.getName()));
+
+        //insert Artist into artist collection in database and get ID so album has refrence ID to artist
+        for (Artist a: album.getArtists()
+                ) {
+            Document artistDoc =  new Document("name", a.getName()).append("nationality", a.getNationality());
+            artistCollection.insertOne(artistDoc);
+            artists.add(artistDoc.getObjectId("_id").toString());
+        }
+
+        //Let genre be an array of album not its own collection
         ArrayList<String> genre = album.getGenre();
 
         Document albumDocument = new Document("title", album.getTitle()).append("nrOfSongs",album.getNumberOfSongs()).append(
                 "releaseDate", album.getReleaseDate()).append("length",album.getLength()).append("artist", artists).append("genre",genre );
 
 
-        MongoCollection<Document> collection = db.getCollection("Album");
-        collection.insertOne(albumDocument);
+        albumCollection.insertOne(albumDocument);
+        ObjectId id = albumDocument.getObjectId("_id");
+        System.out.println(id);
     }
 
     @Override
@@ -159,25 +171,25 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public ArrayList<Album>  searchTitle(String title){
-        ArrayList<Album> albums = new ArrayList<>();
-        return albums;
+        MongoCursor<Document> cursor = albumCollection.find(new Document("title", Pattern.compile(title))).iterator();
+        return docToAlbums(cursor);
     }
 
 
     @Override
     public ArrayList<Album>  searchGenre(String genre){
-        ArrayList<Album> albums = new ArrayList<>();
-        return albums;
+        MongoCursor<Document> cursor = albumCollection.find(new Document("genre", Pattern.compile(genre))).iterator();
+        return docToAlbums(cursor);
     }
     @Override//a
     public ArrayList<Album>  searchRating(String rating){
-        ArrayList<Album> albums = new ArrayList<>();
-        return albums;
+        MongoCursor<Document> cursor = albumCollection.find(new Document("rating", Pattern.compile(rating))).iterator();
+        return docToAlbums(cursor);
     }
     @Override
     public ArrayList<Album>  searchArtist(String artist){
-        ArrayList<Album> albums = new ArrayList<>();
-        return albums;
+        MongoCursor<Document> cursor = albumCollection.find(new Document("artist", Pattern.compile(artist))).iterator();
+        return docToAlbums(cursor);
     }
     
 
