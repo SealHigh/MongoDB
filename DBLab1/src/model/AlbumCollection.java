@@ -45,6 +45,11 @@ public class AlbumCollection implements DBQueries {
         collection.insertOne(albumDocument);
     }
 
+    /**
+     * Used for all album retrival from the database by taking in a cursor of the collection to make into an album
+     * @param cursor of the collection to make into an album
+     * @return  list of albums
+     */
     private ArrayList<Album> docToAlbums(MongoCursor<Document> cursor){
         ArrayList<Album> albums = new ArrayList<>();
         while(cursor.hasNext()){
@@ -52,10 +57,10 @@ public class AlbumCollection implements DBQueries {
             ArrayList<String> genre = new ArrayList<>();
             Document cur = cursor.next();
 
-            try {((List<String>) cur.get("artist")).forEach(a -> artists.add(new Artist(a, "Brit")));}catch (Exception e){}
+            try {((List<Document>) cur.get("artist")).forEach(a -> artists.add(new Artist(a.getString("name"), "Brit")));}catch (Exception e){}
             try {genre.addAll((List<String>)cur.get("genre"));}catch (Exception e){}
 
-            Album album = new Album(cur.get("_id").toString(),cur.get("title").toString(),artists, genre,
+            Album album = new Album(cur.get("_id").toString(),cur.getString("title"),artists, genre,
                     cur.get("releaseDate").toString(), cur.get("length").toString(), cur.get("nrOfSongs").toString(), "3");
             albums.add(album);
         }
@@ -66,8 +71,6 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public ArrayList<Album> getAllRecords() {
-
-
         MongoCursor<Document> cursor = albumCollection.find().iterator();
         return docToAlbums(cursor);
     }
@@ -75,26 +78,24 @@ public class AlbumCollection implements DBQueries {
     @Override
     public void insertRecord(Object o) throws ParseException {
         Album album = (Album)o;
-        ArrayList<String> artists = new ArrayList<>();
-
-        //insert Artist into artist collection in database and get ID so album has refrence ID to artist
-        for (Artist a: album.getArtists()
-                ) {
-            Document artistDoc =  new Document("name", a.getName()).append("nationality", a.getNationality());
-            artistCollection.insertOne(artistDoc);
-            artists.add(artistDoc.getObjectId("_id").toString());
+        ArrayList<Document> artists = new ArrayList<>();
+        try {
+        album.getArtists().forEach(artist -> artists.add(new Document("name",artist.getName()).append("nationality", artist.getNationality())));
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
 
-        //Let genre be an array of album not its own collection
-        ArrayList<String> genre = album.getGenre();
-
         Document albumDocument = new Document("title", album.getTitle()).append("nrOfSongs",album.getNumberOfSongs()).append(
-                "releaseDate", album.getReleaseDate()).append("length",album.getLength()).append("artist", artists).append("genre",genre );
+                "releaseDate", album.getReleaseDate()).append("length",album.getLength()).append("artist", artists).append("genre",album.getGenre() );
 
+        try {
+            albumCollection.insertOne(albumDocument);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
-        albumCollection.insertOne(albumDocument);
-        ObjectId id = albumDocument.getObjectId("_id");
-        System.out.println(id);
     }
 
     @Override
@@ -114,7 +115,8 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public void deleteRecord(Object o) {
-
+        Album album = (Album) o;
+        albumCollection.findOneAndDelete(new Document("_id" ,new ObjectId(album.getAlbumID())));
     }
 
     @Override
