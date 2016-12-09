@@ -31,18 +31,6 @@ public class AlbumCollection implements DBQueries {
         artistCollection = db.getCollection("Artist");
     }
 
-    private void addToDatabase(MongoDatabase db){
-        Document albumDocument = new Document("title", "Test").append("nrOfSongs",34).append("releaseDate", 19940722).append("length",120);
-        ArrayList<Artist> artists = new ArrayList<>();
-
-        ArrayList<String> aritst = new ArrayList<>();
-        aritst.add("test");
-        aritst.add("test4");
-
-        albumDocument.append("artist", aritst);
-        MongoCollection<Document> collection = db.getCollection("Album");
-        collection.insertOne(albumDocument);
-    }
     private void firstRunDatabase(MongoDatabase db){
         db.createCollection("Album");
         Document albumDocument = new Document("title", "Test").append("nrOfSongs",34).append("releaseDate", 19940722).append("length",120);
