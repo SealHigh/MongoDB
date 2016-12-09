@@ -23,12 +23,14 @@ public class AlbumCollection implements DBQueries {
     private MongoDatabase db = null;
     private MongoCollection albumCollection = null;
     private MongoCollection userCollection = null;
+    private MongoCollection reviewCollection = null;
 
     public AlbumCollection () {
         MongoClient mongoClient = new MongoClient();
         db = mongoClient.getDatabase("Labb2");//start connection for session
         albumCollection = db.getCollection("Album");
         userCollection = db.getCollection("Users");
+        reviewCollection = db.getCollection("Reviews");
     }
 
     private void firstRunDatabase(MongoDatabase db){
@@ -45,6 +47,23 @@ public class AlbumCollection implements DBQueries {
         collection.insertOne(albumDocument);
     }
 
+    @Override
+    public int avgRatingFromDoc(Document cur){
+        MongoCursor<Document> reviewCursor = reviewCollection.find(new Document("albumID",cur.get("_id").toString())).iterator();
+        int nrOfRatings = 0;
+        int totalRating = 0;
+        while (reviewCursor.hasNext()){
+            Document reviewCur = reviewCursor.next();
+            totalRating += (Integer)reviewCur.get("rating");
+            nrOfRatings += 1;
+        }
+        int avgRating = 0;
+        if(nrOfRatings >0)
+            avgRating = totalRating/nrOfRatings;
+
+        return avgRating;
+    }
+
     /**
      * Used for all album retrival from the database by taking in a cursor of the collection to make into an album
      * @param cursor of the collection to make into an album
@@ -52,6 +71,7 @@ public class AlbumCollection implements DBQueries {
      */
     private ArrayList<Album> docToAlbums(MongoCursor<Document> cursor){
         ArrayList<Album> albums = new ArrayList<>();
+        int avgRating = 0;
         while(cursor.hasNext()){
             ArrayList<Artist> artists = new ArrayList<>();
             ArrayList<String> genre = new ArrayList<>();
@@ -59,9 +79,10 @@ public class AlbumCollection implements DBQueries {
 
             try {((List<Document>) cur.get("artist")).forEach(a -> artists.add(new Artist(a.getString("name"), "Brit")));}catch (Exception e){}
             try {genre.addAll((List<String>)cur.get("genre"));}catch (Exception e){}
+            avgRating = avgRatingFromDoc(cur);
 
             Album album = new Album(cur.get("_id").toString(),cur.getString("title"),artists, genre,
-                    cur.get("releaseDate").toString(), cur.get("length").toString(), cur.get("nrOfSongs").toString(), "3");
+                    cur.get("releaseDate").toString(), cur.get("length").toString(), cur.get("nrOfSongs").toString(), ""+avgRating);
             albums.add(album);
         }
 
@@ -91,12 +112,24 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public boolean userLogIn(String userName, String password) {
-        return userCollection.find(new Document("userName", userName).append("password", password)).iterator().hasNext();
+
+        MongoCursor<Document> cursor = userCollection.find(new Document("userName", userName).append("password", password)).iterator();
+
+        if(cursor.hasNext()) {
+            Document cur = cursor.next();
+            this.loggedInUser = new LoggedInUser(cur.getString("userName"), cur.get("_id").toString());
+        }
+
+        return loggedInUser != null;
     }
 
 
 
     public void setAlbumRating(int rating, String comment, String albumID) throws Exception{
+        if(!reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append("albumID", albumID)).iterator().hasNext())
+            reviewCollection.insertOne(new Document("rating", rating).append("comment", comment).append("userID", loggedInUser.getUserId()).append("albumID",albumID));
+        else
+            System.out.println("User allready has review on this album, throw exception");
     }
 
 
@@ -127,9 +160,24 @@ public class AlbumCollection implements DBQueries {
     }
 
     @Override
-    public ArrayList<Review> getReviews(String albumID){
+    public User getUser(String albumID){
+        MongoCursor<Document> userCur = userCollection.find(new Document("_id", new ObjectId(albumID))).iterator();
+        Document userDoc = userCur.next();
+        User user = new User(userDoc.getString("userName"));
+        return user;
 
+    }
+
+    @Override
+    public ArrayList<Review> getReviews(String albumID){
+        MongoCursor<Document> cursor = reviewCollection.find(new Document("albumID", albumID)).iterator();
         ArrayList<Review> reviews = new ArrayList<>();
+        while(cursor.hasNext()) {
+            Document cur = cursor.next();
+            User user = getUser(cur.getString("userID"));
+            reviews.add(new Review(cur.getInteger("rating"), cur.getString("comment"), user.getUserName()));
+        }
+
         return reviews;
     }
 

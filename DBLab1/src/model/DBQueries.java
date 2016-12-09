@@ -1,6 +1,8 @@
 package model;
 
 
+import org.bson.Document;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -33,6 +35,10 @@ public interface DBQueries {
     ArrayList<Artist> getArtists(String albumID);
 
     ArrayList<Review> getReviews(String albumID);
+
+    User getUser(String albumID);
+
+    int avgRatingFromDoc(Document cur);
 
     ArrayList<String> getGenres(String albumID);
 

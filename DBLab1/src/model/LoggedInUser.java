@@ -4,14 +4,14 @@ package model;
 
 public class LoggedInUser extends User {
     
-    private final int userId;
+    private final String userId;
     
-    public LoggedInUser (String userName, int userId) {
+    public LoggedInUser (String userName, String userId) {
         super(userName);
         this.userId = userId;
     }
     
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 }
