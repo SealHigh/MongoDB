@@ -27,7 +27,7 @@ public class AlbumCollection implements DBQueries {
 
     public AlbumCollection () {
         MongoClient mongoClient = new MongoClient();
-        db = mongoClient.getDatabase("Labb2");//start connection for session
+        db = mongoClient.getDatabase("Labb2"); //start connection for session
         albumCollection = db.getCollection("Album");
         userCollection = db.getCollection("Users");
         reviewCollection = db.getCollection("Reviews");
@@ -98,7 +98,7 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public void insertRecord(Object o) throws ParseException {
-        Album album = (Album)o;
+        Album album = (Album) o;
 
         ArrayList<Document> artists = new ArrayList<>();
         album.getArtists().forEach(artist -> artists.add(new Document("name",artist.getName()).append("nationality", artist.getNationality())));
@@ -127,7 +127,7 @@ public class AlbumCollection implements DBQueries {
 
     public void setAlbumRating(int rating, String comment, String albumID) throws Exception{
         if(!reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append("albumID", albumID)).iterator().hasNext())
-            reviewCollection.insertOne(new Document("rating", rating).append("comment", comment).append("userID", loggedInUser.getUserId()).append("albumID",albumID));
+            reviewCollection.insertOne(new Document("rating", rating).append("comment", comment).append("userID", new String(loggedInUser.getUserId())).append("albumID",albumID));
         else
             System.out.println("User allready has review on this album, throw exception");
     }
