@@ -57,24 +57,27 @@ public class AlbumCollection implements DBQueries {
      * @param cursor of the collection to make into an album
      * @return  list of albums
      */
-    private ArrayList<Album> docToAlbums(MongoCursor<Document> cursor){
+    private ArrayList<Album> docToAlbums(MongoCursor<Document> cursor) {
         ArrayList<Album> albums = new ArrayList<>();
-        while(cursor.hasNext()){
+        while (cursor.hasNext()) {
             ArrayList<Artist> artists = new ArrayList<>();
             ArrayList<String> genre = new ArrayList<>();
             Document cur = cursor.next();
             try {
-                Document review = (Document)cur.get("review");
+                Document review = (Document) cur.get("review");
                 ((List<Document>) cur.get("artist")).forEach(a -> artists.add(new Artist(a.getString("name"), "Brit")));
-                genre.addAll((List<String>)cur.get("genre"));
+                genre.addAll((List<String>) cur.get("genre"));
                 int avgRating = avgRatingFromDoc(cur);
-                Album album = new Album(cur.get("_id").toString(),cur.getString("title"),artists, genre,
+                Album album = new Album(cur.get("_id").toString(), cur.getString("title"), artists, genre,
                         cur.get("releaseDate").toString(), cur.get("length").toString(), cur.get("nrOfSongs").toString(),
-                            review.getInteger("avgRating").toString(), review.getInteger("count").toString());
+                        review.getInteger("avgRating").toString(), review.getInteger("count").toString());
 
 
                 albums.add(album);
-            }catch (Exception e){}
+            } catch (Exception e) {
+                //Throw exception could not load document
+            }
+        }
         return albums;
     }
 
@@ -101,7 +104,7 @@ public class AlbumCollection implements DBQueries {
     }
 
     @Override
-    public boolean userLogIn(String userName, String password) {
+    public boolean userLogIn(String userName, String password){
 
         MongoCursor<Document> cursor = userCollection.find(new Document("userName", userName).append("password", password)).iterator();
         if(cursor.hasNext()) {
