@@ -75,11 +75,6 @@ public class AlbumCollection implements DBQueries {
 
                 albums.add(album);
             }catch (Exception e){}
-
-
-
-
-        }
         return albums;
     }
 
@@ -126,7 +121,7 @@ public class AlbumCollection implements DBQueries {
      */
     public void setAlbumRating(int rating, String comment, String albumID) throws Exception{
     if(!reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append("albumID", albumID)).iterator().hasNext()) {
-        reviewCollection.insertOne(new Document("rating", rating).append("comment", comment).append("userID", loggedInUser.getUserId()).append("albumID", albumID));
+        reviewCollection.insertOne(new Document("rating", rating).append("comment", comment).append("userID", new String(loggedInUser.getUserId())).append("albumID", albumID));
         MongoCursor<Document> cursor = albumCollection.find(eq("_id", new ObjectId(albumID))).iterator();
         Document cur = cursor.next();
         albumCollection.updateOne(eq("_id", new ObjectId(albumID)), inc("review.count", 1));
@@ -149,7 +144,6 @@ public class AlbumCollection implements DBQueries {
         }
         if(nrOfRatings >0)
             avgRating = totalRating/nrOfRatings;
-
         return avgRating;
     }
 
@@ -202,12 +196,14 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public ArrayList<Artist> getArtists(String albumID){
+        
         ArrayList<Artist> artists = new ArrayList<>();
         return artists;
     }
 
     @Override
     public Director getDirector(String albumID){
+        
         Director director= null;
         return director;
     }
