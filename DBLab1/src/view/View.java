@@ -68,7 +68,16 @@ public class View {
                     QueryInfo qi = result.get();
                     String userInput = qi.getUserInput();
                     SearchOptions searchOption = qi.getSearchOption();
-                    con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
+                    try {
+                        con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
+                    }
+                    catch (Exception e){
+                        Alert alert = new Alert(AlertType.INFORMATION, "No results found");
+                        alert.setTitle("");
+                        alert.setHeaderText(null);
+                        alert.showAndWait();
+                    }
+
                     queryDialog.clearFields();
                 }
             }
@@ -357,7 +366,15 @@ public class View {
                     QueryInfo qi = result.get();
                     String userInput = qi.getUserInput();
                     SearchOptions searchOption = qi.getSearchOption();
-                    con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
+                    try {
+                        con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
+                    }
+                    catch (Exception e){
+                        Alert alert = new Alert(AlertType.INFORMATION, "No results found");
+                        alert.setTitle("");
+                        alert.setHeaderText(null);
+                        alert.showAndWait();
+                    }
                     queryDialog.clearFields();
                 }
             }

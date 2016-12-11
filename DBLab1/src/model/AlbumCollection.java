@@ -216,24 +216,24 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public ArrayList<Album>  searchTitle(String title){
-        MongoCursor<Document> cursor = albumCollection.find(new Document("title", Pattern.compile(title))).iterator();
+        MongoCursor<Document> cursor = albumCollection.find(eq("title", Pattern.compile(title))).iterator();
         return docToAlbums(cursor);
     }
 
 
     @Override
     public ArrayList<Album>  searchGenre(String genre){
-        MongoCursor<Document> cursor = albumCollection.find(new Document("genre", Pattern.compile(genre))).iterator();
+        MongoCursor<Document> cursor = albumCollection.find(eq("genre", Pattern.compile(genre))).iterator();
         return docToAlbums(cursor);
     }
     @Override//a
-    public ArrayList<Album>  searchRating(String rating){
-        MongoCursor<Document> cursor = albumCollection.find(new Document("rating", Pattern.compile(rating))).iterator();
+    public ArrayList<Album>  searchRating(int rating){
+        MongoCursor<Document> cursor = albumCollection.find(gt("review.avgRating", rating)).iterator();
         return docToAlbums(cursor);
     }
     @Override
     public ArrayList<Album>  searchArtist(String artist){
-        MongoCursor<Document> cursor = albumCollection.find(new Document("artist", Pattern.compile(artist))).iterator();
+        MongoCursor<Document> cursor = albumCollection.find(eq("artist.name", Pattern.compile(artist))).iterator();
         return docToAlbums(cursor);
     }
     

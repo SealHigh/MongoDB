@@ -84,8 +84,7 @@ public class Controller {
         
     }
 
-    public void handleQueryEvent(SearchOptions searchOption, String userInput) {
-        System.out.println(searchOption.toString());
+    public void handleQueryEvent(SearchOptions searchOption, String userInput) throws Exception {
 
         switch (searchOption.toString()){
             case "title":  new Thread() {
@@ -125,9 +124,10 @@ public class Controller {
                                 }
                             }.start();
                             break;
-            case "rating":  new Thread() {
+            case "rating":  int userRating = Integer.parseInt(userInput);
+                        new Thread() {
                                 public void run() {
-                                    ArrayList<Album> albums =ac.searchRating(userInput);
+                                    ArrayList<Album> albums =ac.searchRating(userRating);
                                     javafx.application.Platform.runLater(
                                             new Runnable() {
                                                 public void run() {

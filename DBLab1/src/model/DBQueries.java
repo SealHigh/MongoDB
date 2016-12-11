@@ -50,7 +50,7 @@ public interface DBQueries {
 
     <T> ArrayList<T> searchGenre(String title);
 
-    <T> ArrayList<T> searchRating(String title);
+    <T> ArrayList<T> searchRating(int title);
 
     
 }
