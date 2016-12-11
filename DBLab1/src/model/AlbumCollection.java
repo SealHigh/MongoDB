@@ -126,7 +126,7 @@ public class AlbumCollection implements DBQueries {
      * @throws Exception
      */
     public void setAlbumRating(int rating, String comment, String albumID) throws Exception{
-
+    if(reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append("albumID", albumID)).iterator().hasNext()) {
         reviewCollection.insertOne(new Document("rating", rating).append("comment", comment)
                 .append("userID", new String(loggedInUser.getUserId()))
                 .append("albumID", albumID));
@@ -138,7 +138,9 @@ public class AlbumCollection implements DBQueries {
         albumCollection.updateOne(eq("_id", new ObjectId(albumID)), set("review.avgRating", newRating));
         albumCollection.updateOne(eq("_id", new ObjectId(albumID)), inc("review.count", 1));
 
-
+    }
+        else
+            System.out.println("User has left review, THROW EXCEPTION INSTEAD");
     }
 
     @Override
