@@ -15,6 +15,9 @@ import java.util.regex.Pattern;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Updates.*;
+
 
 public class AlbumCollection implements DBQueries {
 
@@ -47,22 +50,7 @@ public class AlbumCollection implements DBQueries {
         collection.insertOne(albumDocument);
     }
 
-    @Override
-    public int avgRatingFromDoc(Document cur){
-        MongoCursor<Document> reviewCursor = reviewCollection.find(new Document("albumID",cur.get("_id").toString())).iterator();
-        int nrOfRatings = 0;
-        int totalRating = 0;
-        while (reviewCursor.hasNext()){
-            Document reviewCur = reviewCursor.next();
-            totalRating += (Integer)reviewCur.get("rating");
-            nrOfRatings += 1;
-        }
-        int avgRating = 0;
-        if(nrOfRatings >0)
-            avgRating = totalRating/nrOfRatings;
 
-        return avgRating;
-    }
 
     /**
      * Used for all album retrival from the database by taking in a cursor of the collection to make into an album
@@ -71,21 +59,27 @@ public class AlbumCollection implements DBQueries {
      */
     private ArrayList<Album> docToAlbums(MongoCursor<Document> cursor){
         ArrayList<Album> albums = new ArrayList<>();
-        int avgRating = 0;
         while(cursor.hasNext()){
             ArrayList<Artist> artists = new ArrayList<>();
             ArrayList<String> genre = new ArrayList<>();
             Document cur = cursor.next();
+            try {
+                Document review = (Document)cur.get("review");
+                ((List<Document>) cur.get("artist")).forEach(a -> artists.add(new Artist(a.getString("name"), "Brit")));
+                genre.addAll((List<String>)cur.get("genre"));
+                int avgRating = avgRatingFromDoc(cur);
+                Album album = new Album(cur.get("_id").toString(),cur.getString("title"),artists, genre,
+                        cur.get("releaseDate").toString(), cur.get("length").toString(), cur.get("nrOfSongs").toString(),
+                            review.getInteger("avgRating").toString(), review.getInteger("count").toString());
 
-            try {((List<Document>) cur.get("artist")).forEach(a -> artists.add(new Artist(a.getString("name"), "Brit")));}catch (Exception e){}
-            try {genre.addAll((List<String>)cur.get("genre"));}catch (Exception e){}
-            avgRating = avgRatingFromDoc(cur);
 
-            Album album = new Album(cur.get("_id").toString(),cur.getString("title"),artists, genre,
-                    cur.get("releaseDate").toString(), cur.get("length").toString(), cur.get("nrOfSongs").toString(), ""+avgRating);
-            albums.add(album);
+                albums.add(album);
+            }catch (Exception e){}
+
+
+
+
         }
-
         return albums;
     }
 
@@ -104,7 +98,8 @@ public class AlbumCollection implements DBQueries {
         album.getArtists().forEach(artist -> artists.add(new Document("name",artist.getName()).append("nationality", artist.getNationality())));
 
         Document albumDocument = new Document("title", album.getTitle()).append("nrOfSongs",album.getNumberOfSongs()).append(
-                "releaseDate", album.getReleaseDate()).append("length",album.getLength()).append("artist", artists).append("genre",album.getGenre() );
+                "releaseDate", album.getReleaseDate()).append("length",album.getLength()).append("artist", artists).append("genre",album.getGenre()).append(
+                        "review", new Document("avgRating", 0).append("count", 0));
 
         albumCollection.insertOne(albumDocument);
 
@@ -114,25 +109,49 @@ public class AlbumCollection implements DBQueries {
     public boolean userLogIn(String userName, String password) {
 
         MongoCursor<Document> cursor = userCollection.find(new Document("userName", userName).append("password", password)).iterator();
-
         if(cursor.hasNext()) {
             Document cur = cursor.next();
             this.loggedInUser = new LoggedInUser(cur.getString("userName"), cur.get("_id").toString());
         }
-
         return loggedInUser != null;
     }
 
 
-
+    /**
+     * Creates a new review of the album aswell as changes the avgRating of the album and nr of reviews
+     * @param rating from the user
+     * @param comment from the user
+     * @param albumID album to which the review belongs to
+     * @throws Exception
+     */
     public void setAlbumRating(int rating, String comment, String albumID) throws Exception{
-        if(!reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append("albumID", albumID)).iterator().hasNext())
-            reviewCollection.insertOne(new Document("rating", rating).append("comment", comment).append("userID", loggedInUser.getUserId()).append("albumID",albumID));
+    if(!reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append("albumID", albumID)).iterator().hasNext()) {
+        reviewCollection.insertOne(new Document("rating", rating).append("comment", comment).append("userID", loggedInUser.getUserId()).append("albumID", albumID));
+        MongoCursor<Document> cursor = albumCollection.find(eq("_id", new ObjectId(albumID))).iterator();
+        Document cur = cursor.next();
+        albumCollection.updateOne(eq("_id", new ObjectId(albumID)), inc("review.count", 1));
+        albumCollection.updateOne(eq("_id", new ObjectId(albumID)), set("review.avgRating", avgRatingFromDoc(cur)));
+    }
         else
-            System.out.println("User allready has review on this album, throw exception");
+            System.out.println("User has left review, THROW EXCEPTION INSTEAD");
     }
 
+    @Override
+    public int avgRatingFromDoc(Document cur){
+        MongoCursor<Document> reviewCursor = reviewCollection.find(new Document("albumID",cur.get("_id").toString())).iterator();
+        int nrOfRatings = 0;
+        int totalRating = 0;
+        int avgRating = 0;
+        while (reviewCursor.hasNext()){
+            Document reviewCur = reviewCursor.next();
+            totalRating += (Integer)reviewCur.get("rating");
+            nrOfRatings += 1;
+        }
+        if(nrOfRatings >0)
+            avgRating = totalRating/nrOfRatings;
 
+        return avgRating;
+    }
 
 
     @Override
@@ -183,14 +202,12 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public ArrayList<Artist> getArtists(String albumID){
-        
         ArrayList<Artist> artists = new ArrayList<>();
         return artists;
     }
 
     @Override
     public Director getDirector(String albumID){
-        
         Director director= null;
         return director;
     }

@@ -154,7 +154,7 @@ public class Controller {
         new Thread() {
             public void run(){
                 try {
-                    ac.insertRecord(new Album(genre,title,artist,releaseDate,length,nrOfSongs));
+                    ac.insertRecord(new Album(genre,title,artist,releaseDate,length,nrOfSongs,0));
                 }
                 catch (Exception e){
                     javafx.application.Platform.runLater(

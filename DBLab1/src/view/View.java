@@ -211,12 +211,9 @@ public class View {
         
         TableColumn<Album, String > nrOfReviewsCol = new TableColumn<>("Nr Of Reviews");
         nrOfReviewsCol.setMinWidth(100);
-        nrOfReviewsCol.setCellValueFactory(cellData -> {
-            ArrayList<Review> reviews = cellData.getValue().getReviews();
-            String nrOfReviewsString = Integer.toString(reviews.size());
-
-            return new ReadOnlyStringWrapper(nrOfReviewsString);
-        });
+        nrOfReviewsCol.setCellValueFactory(
+                new PropertyValueFactory<>("reviews")
+        );
         
         titleCol.prefWidthProperty().bind(mainTable.widthProperty().divide(6.02)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
         titleCol.setStyle("-fx-alignment: CENTER;");
@@ -241,7 +238,7 @@ public class View {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Album rowData = row.getItem();
-                    if(rowData.getReviews() != null) {
+                    if(Integer.parseInt(rowData.getReviews()) != 0) {
                         ArrayList<Review> reviewData = ac.getReviews(rowData.getAlbumID());
                         reviewTable.setItems(FXCollections.observableArrayList(reviewData));
                         border.setCenter(reviewTable);
