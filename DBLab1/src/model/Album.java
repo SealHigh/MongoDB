@@ -11,7 +11,7 @@ public class Album {
     private String title;   
     private String releaseDate;
     private String length;
-    private String  rating;
+    private double  rating;
     private String numberOfSongs;
     private String genreAsString; //Only to feed cell value factory in table view
     private String artistAsString; //Only to feed cell value factory in table view
@@ -22,7 +22,7 @@ public class Album {
     }
 
     public Album (String albumID, String title, ArrayList<Artist> artists, ArrayList<String> genres,
-                  String releaseDate, String length, String numberOfSongs, String rating, String nrOfReviews) {
+                  String releaseDate, String length, String numberOfSongs, double rating, String nrOfReviews) {
         this.albumID = albumID;
         this.genres = genres;
         this.title = title;
@@ -52,7 +52,7 @@ public class Album {
 
     public String getRating () {
         
-        return rating;
+        return String.format("%.1f",rating);
     }
 
     /**

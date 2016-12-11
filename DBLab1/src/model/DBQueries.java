@@ -38,7 +38,7 @@ public interface DBQueries {
 
     User getUser(String albumID);
 
-    int avgRatingFromDoc(Document cur);
+    double avgRatingFromDoc(Document cur, int rating);
 
     ArrayList<String> getGenres(String albumID);
 

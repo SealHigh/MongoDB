@@ -67,10 +67,9 @@ public class AlbumCollection implements DBQueries {
                 Document review = (Document) cur.get("review");
                 ((List<Document>) cur.get("artist")).forEach(a -> artists.add(new Artist(a.getString("name"), "Brit")));
                 genre.addAll((List<String>) cur.get("genre"));
-                int avgRating = avgRatingFromDoc(cur);
                 Album album = new Album(cur.get("_id").toString(), cur.getString("title"), artists, genre,
                         cur.get("releaseDate").toString(), cur.get("length").toString(), cur.get("nrOfSongs").toString(),
-                        review.getInteger("avgRating").toString(), review.getInteger("count").toString());
+                        review.getDouble("avgRating"), review.getInteger("count").toString());
 
 
                 albums.add(album);
@@ -95,9 +94,13 @@ public class AlbumCollection implements DBQueries {
         ArrayList<Document> artists = new ArrayList<>();
         album.getArtists().forEach(artist -> artists.add(new Document("name",artist.getName()).append("nationality", artist.getNationality())));
 
-        Document albumDocument = new Document("title", album.getTitle()).append("nrOfSongs",album.getNumberOfSongs()).append(
-                "releaseDate", album.getReleaseDate()).append("length",album.getLength()).append("artist", artists).append("genre",album.getGenre()).append(
-                        "review", new Document("avgRating", 0).append("count", 0));
+        Document albumDocument = new Document("title", album.getTitle())
+                .append("nrOfSongs",album.getNumberOfSongs()).append(
+                "releaseDate", album.getReleaseDate())
+                .append("length",album.getLength())
+                .append("artist", artists)
+                .append("genre",album.getGenre())
+                .append("review", new Document("avgRating", 0.0).append("count", 0));
 
         albumCollection.insertOne(albumDocument);
 
@@ -123,31 +126,28 @@ public class AlbumCollection implements DBQueries {
      * @throws Exception
      */
     public void setAlbumRating(int rating, String comment, String albumID) throws Exception{
-    if(!reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append("albumID", albumID)).iterator().hasNext()) {
-        reviewCollection.insertOne(new Document("rating", rating).append("comment", comment).append("userID", new String(loggedInUser.getUserId())).append("albumID", albumID));
+
+        reviewCollection.insertOne(new Document("rating", rating).append("comment", comment)
+                .append("userID", new String(loggedInUser.getUserId()))
+                .append("albumID", albumID));
         MongoCursor<Document> cursor = albumCollection.find(eq("_id", new ObjectId(albumID))).iterator();
         Document cur = cursor.next();
+
+        Document reviewCur = (Document)cur.get("review");
+        double newRating = avgRatingFromDoc(reviewCur, rating);
+        albumCollection.updateOne(eq("_id", new ObjectId(albumID)), set("review.avgRating", newRating));
         albumCollection.updateOne(eq("_id", new ObjectId(albumID)), inc("review.count", 1));
-        albumCollection.updateOne(eq("_id", new ObjectId(albumID)), set("review.avgRating", avgRatingFromDoc(cur)));
-    }
-        else
-            System.out.println("User has left review, THROW EXCEPTION INSTEAD");
+
+
     }
 
     @Override
-    public int avgRatingFromDoc(Document cur){
-        MongoCursor<Document> reviewCursor = reviewCollection.find(new Document("albumID",cur.get("_id").toString())).iterator();
-        int nrOfRatings = 0;
-        int totalRating = 0;
-        int avgRating = 0;
-        while (reviewCursor.hasNext()){
-            Document reviewCur = reviewCursor.next();
-            totalRating += (Integer)reviewCur.get("rating");
-            nrOfRatings += 1;
-        }
-        if(nrOfRatings >0)
-            avgRating = totalRating/nrOfRatings;
-        return avgRating;
+    public double avgRatingFromDoc(Document cur, int rating){
+        double totalRating = cur.getDouble("avgRating");
+        int nrOfRatings = cur.getInteger("count");
+
+        double newRatintg = (totalRating*nrOfRatings+rating)/(nrOfRatings+1);
+        return newRatintg;
     }
 
 
