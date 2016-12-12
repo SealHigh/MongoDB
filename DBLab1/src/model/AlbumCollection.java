@@ -196,9 +196,15 @@ public class AlbumCollection implements DBQueries {
     }
 
     @Override
-    public void deleteRecord(Object o) {
+    public void deleteAlbum(Object o) {
         Album album = (Album) o;
         albumCollection.findOneAndDelete(new Document("_id" ,new ObjectId(album.getAlbumID())));
+    }
+
+    @Override
+    public void deleteMovie(Object o) {
+        Movie movie = (Movie) o;
+        movieCollection.findOneAndDelete(new Document("_id" ,new ObjectId(movie.getMovieID())));
     }
 
     @Override

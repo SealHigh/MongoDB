@@ -29,7 +29,9 @@ public interface DBQueries {
 
     void insertMovie(Object o) throws ParseException;
 
-    void deleteRecord(Object o);
+    void deleteAlbum(Object o);
+
+    void deleteMovie(Object o);
 
     void reviewRecord(int rating, String comment, String ID, String type) throws Exception;
 

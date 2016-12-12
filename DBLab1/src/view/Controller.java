@@ -24,7 +24,7 @@ public class Controller {
     public void handleDeleteAlbumEvent(Album selectedAlbum) {
         new Thread() {
             public void run() {
-                ac.deleteRecord(selectedAlbum);
+                ac.deleteAlbum(selectedAlbum);
                 ArrayList<Album>  albums = ac.getAlbums();
                 javafx.application.Platform.runLater(
                         new Runnable() {
