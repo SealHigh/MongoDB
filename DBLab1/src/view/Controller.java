@@ -1,12 +1,9 @@
 
 package view;
 
-import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import model.Album;
 import model.AlbumCollection;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import javafx.scene.control.Alert;
@@ -28,7 +25,7 @@ public class Controller {
         new Thread() {
             public void run() {
                 ac.deleteRecord(selectedAlbum);
-                ArrayList<Album>  albums = ac.getAllRecords();
+                ArrayList<Album>  albums = ac.getAlbums();
                 javafx.application.Platform.runLater(
                         new Runnable() {
                             public void run() {
@@ -43,7 +40,7 @@ public class Controller {
         new Thread() {
             public void run() {
                 try {
-                    ac.setAlbumRating(rating, comment, albumID);
+                    ac.reviewRecord(rating, comment, albumID, "album");
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -57,7 +54,7 @@ public class Controller {
                                 }
                             });
                 }
-                ArrayList<Album> albums = ac.getAllRecords();
+                ArrayList<Album> albums = ac.getAlbums();
                 javafx.application.Platform.runLater(
                         new Runnable() {
                             public void run() {
@@ -72,7 +69,7 @@ public class Controller {
     public void handleGetAllAlbumsEvent() {
         new Thread() {
             public void run() {
-                ArrayList<Album> albums = ac.getAllRecords();
+                ArrayList<Album> albums = ac.getAlbums();
                 javafx.application.Platform.runLater(
                         new Runnable() {
                             public void run() {
@@ -89,7 +86,7 @@ public class Controller {
         switch (searchOption.toString()){
             case "title":  new Thread() {
                                 public void run() {
-                                    ArrayList<Album> albums = ac.searchTitle(userInput);
+                                    ArrayList<Album> albums = ac.searchAlbumTitle(userInput);
                                     javafx.application.Platform.runLater(
                                             new Runnable() {
                                                 public void run() {
@@ -114,7 +111,7 @@ public class Controller {
 
             case "genre":  new Thread() {
                                 public void run() {
-                                    ArrayList<Album> albums =ac.searchGenre(userInput);;
+                                    ArrayList<Album> albums =ac.searchAlbumGenre(userInput);;
                                     javafx.application.Platform.runLater(
                                             new Runnable() {
                                                 public void run() {
@@ -127,7 +124,7 @@ public class Controller {
             case "rating":  int userRating = Integer.parseInt(userInput);
                         new Thread() {
                                 public void run() {
-                                    ArrayList<Album> albums =ac.searchRating(userRating);
+                                    ArrayList<Album> albums =ac.searchAlbumRating(userRating);
                                     javafx.application.Platform.runLater(
                                             new Runnable() {
                                                 public void run() {
@@ -154,7 +151,7 @@ public class Controller {
         new Thread() {
             public void run(){
                 try {
-                    ac.insertRecord(new Album(genre,title,artist,releaseDate,length,nrOfSongs,0));
+                    ac.insertAlbum(new Album(genre,title,artist,releaseDate,length,nrOfSongs,0));
                 }
                 catch (Exception e){
                     javafx.application.Platform.runLater(
@@ -168,7 +165,7 @@ public class Controller {
                             });
                 }
 
-                ArrayList<Album> albums =  ac.getAllRecords();
+                ArrayList<Album> albums =  ac.getAlbums();
                 javafx.application.Platform.runLater(
                         new Runnable() {
                             public void run() {

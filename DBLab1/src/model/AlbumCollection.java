@@ -21,12 +21,12 @@ import static com.mongodb.client.model.Updates.*;
 
 public class AlbumCollection implements DBQueries {
 
-    private Connection conn = null;
     private LoggedInUser loggedInUser;
     private MongoDatabase db = null;
     private MongoCollection albumCollection = null;
     private MongoCollection userCollection = null;
     private MongoCollection reviewCollection = null;
+    private MongoCollection movieCollection = null;
 
     public AlbumCollection () {
         MongoClient mongoClient = new MongoClient();
@@ -34,30 +34,15 @@ public class AlbumCollection implements DBQueries {
         albumCollection = db.getCollection("Album");
         userCollection = db.getCollection("Users");
         reviewCollection = db.getCollection("Reviews");
+        movieCollection = db.getCollection("Movie");
     }
-
-    private void firstRunDatabase(MongoDatabase db){
-        db.createCollection("Album");
-        Document albumDocument = new Document("title", "Test").append("nrOfSongs",34).append("releaseDate", 19940722).append("length",120);
-        ArrayList<Artist> artists = new ArrayList<>();
-
-        ArrayList<String> aritst = new ArrayList<>();
-        aritst.add("test");
-        aritst.add("test4");
-
-        albumDocument.append("artist", aritst);
-        MongoCollection<Document> collection = db.getCollection("Album");
-        collection.insertOne(albumDocument);
-    }
-
-
 
     /**
      * Used for all album retrival from the database by taking in a cursor of the collection to make into an album
      * @param cursor of the collection to make into an album
      * @return  list of albums
      */
-    private ArrayList<Album> docToAlbums(MongoCursor<Document> cursor) {
+    private ArrayList<Album> curToAlbums(MongoCursor<Document> cursor) {
         ArrayList<Album> albums = new ArrayList<>();
         while (cursor.hasNext()) {
             ArrayList<Artist> artists = new ArrayList<>();
@@ -80,15 +65,47 @@ public class AlbumCollection implements DBQueries {
         return albums;
     }
 
+    private ArrayList<Movie> curToMovies(MongoCursor<Document> cursor) {
+        ArrayList<Movie> movies = new ArrayList<>();
+        while (cursor.hasNext()) {
+            Director director;
+            Document cur = cursor.next();
+            try {
+
+                Document review = (Document) cur.get("review");
+                Document dir = (Document) cur.get("director");
+                director = new Director(dir.getString("name"), dir.getString("nationality"));
+
+                Movie movie = new Movie(cur.get("_id").toString(),
+                        cur.get("title").toString(), director,  cur.get("genre").toString(),
+                        cur.get("releaseYear").toString(),
+                        cur.get("length").toString(),
+                        (Double)review.get("avgRating"),
+                        review.get("count").toString());
+
+                movies.add(movie);
+            } catch (Exception e) {
+                //Throw exception could not load document
+            }
+        }
+        return movies;
+    }
+
 
     @Override
-    public ArrayList<Album> getAllRecords() {
+    public ArrayList<Album> getAlbums() {
         MongoCursor<Document> cursor = albumCollection.find().iterator();
-        return docToAlbums(cursor);
+        return curToAlbums(cursor);
     }
 
     @Override
-    public void insertRecord(Object o) throws ParseException {
+    public ArrayList<Movie> getMovies() {
+        MongoCursor<Document> cursor = movieCollection.find().iterator();
+        return curToMovies(cursor);
+    }
+
+    @Override
+    public void insertAlbum(Object o) throws ParseException {
         Album album = (Album)o;
 
         ArrayList<Document> artists = new ArrayList<>();
@@ -100,9 +117,26 @@ public class AlbumCollection implements DBQueries {
                 .append("length",album.getLength())
                 .append("artist", artists)
                 .append("genre",album.getGenre())
-                .append("review", new Document("avgRating", 0.0).append("count", 0));
+                .append("review", new Document("avgRating", 0.0).append("count", 0))
+                .append("addedBy", loggedInUser.getUserId());
 
         albumCollection.insertOne(albumDocument);
+
+    }
+
+    @Override
+    public void insertMovie(Object o) throws ParseException {
+        Movie movie = (Movie) o;
+
+        Document movieDocument = new Document("title", movie.getTitle())
+                .append("releaseYear", movie.getReleaseYear())
+                .append("length",movie.getLength())
+                .append("director", new Document("name", movie.getDirector().getName()).append("nationality",movie.getDirector().getNationality()))
+                .append("genre",movie.getGenre())
+                .append("review", new Document("avgRating", 0.0).append("count", 0))
+                .append("addedBy", loggedInUser.getUserId());
+
+        movieCollection.insertOne(movieDocument);
 
     }
 
@@ -122,26 +156,35 @@ public class AlbumCollection implements DBQueries {
      * Creates a new review of the album aswell as changes the avgRating of the album and nr of reviews
      * @param rating from the user
      * @param comment from the user
-     * @param albumID album to which the review belongs to
+     * @param ID record to which the review belongs to
+     * @param type of object the review belongs to
      * @throws Exception
      */
-    public void setAlbumRating(int rating, String comment, String albumID) throws Exception{
-    if(!reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append("albumID", albumID)).iterator().hasNext()) {
+    @Override
+    public void reviewRecord(int rating, String comment, String ID, String type) throws Exception{
+    if(!reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append(type+"ID", ID)).iterator().hasNext()) {
         reviewCollection.insertOne(new Document("rating", rating).append("comment", comment)
                 .append("userID", new String(loggedInUser.getUserId()))
-                .append("albumID", albumID));
-        MongoCursor<Document> cursor = albumCollection.find(eq("_id", new ObjectId(albumID))).iterator();
+                .append(type+"ID", ID));
+        MongoCursor<Document> cursor = albumCollection.find(eq("_id", new ObjectId(ID))).iterator();
         Document cur = cursor.next();
 
         Document reviewCur = (Document)cur.get("review");
         double newRating = avgRatingFromDoc(reviewCur, rating);
-        albumCollection.updateOne(eq("_id", new ObjectId(albumID)), set("review.avgRating", newRating));
-        albumCollection.updateOne(eq("_id", new ObjectId(albumID)), inc("review.count", 1));
+        if(type == "album") {
+            albumCollection.updateOne(eq("_id", new ObjectId(ID)), set("review.avgRating", newRating));
+            albumCollection.updateOne(eq("_id", new ObjectId(ID)), inc("review.count", 1));
+        }
+        else if(type == "movie"){
+            movieCollection.updateOne(eq("_id", new ObjectId(ID)), set("review.avgRating", newRating));
+            movieCollection.updateOne(eq("_id", new ObjectId(ID)), inc("review.count", 1));
+        }
 
     }
         else
             System.out.println("User has left review, THROW EXCEPTION INSTEAD");
     }
+
 
     @Override
     public double avgRatingFromDoc(Document cur, int rating){
@@ -152,29 +195,10 @@ public class AlbumCollection implements DBQueries {
         return newRatintg;
     }
 
-
     @Override
     public void deleteRecord(Object o) {
         Album album = (Album) o;
         albumCollection.findOneAndDelete(new Document("_id" ,new ObjectId(album.getAlbumID())));
-    }
-
-    @Override
-    public int getAlbumRating(String albumId){
-        return 0;
-    }
-    
-
-
-    @Override
-    public void rateAlbum(Object o){
-
-    }
-
-    @Override
-    public  ArrayList<String> getGenres(String albumID){
-        ArrayList<String> genres = new ArrayList<>();
-        return genres;
     }
 
     @Override
@@ -199,50 +223,53 @@ public class AlbumCollection implements DBQueries {
         return reviews;
     }
 
-    @Override
-    public ArrayList<Artist> getArtists(String albumID){
-        
-        ArrayList<Artist> artists = new ArrayList<>();
-        return artists;
-    }
-
-    @Override
-    public Director getDirector(String albumID){
-        
-        Director director= null;
-        return director;
-    }
 
 
     @Override
-    public ArrayList<Album>  searchTitle(String title){
+    public ArrayList<Album> searchAlbumTitle(String title){
         MongoCursor<Document> cursor = albumCollection.find(eq("title", Pattern.compile(title))).iterator();
-        return docToAlbums(cursor);
+        return curToAlbums(cursor);
     }
 
 
     @Override
-    public ArrayList<Album>  searchGenre(String genre){
+    public ArrayList<Album> searchAlbumGenre(String genre){
         MongoCursor<Document> cursor = albumCollection.find(eq("genre", Pattern.compile(genre))).iterator();
-        return docToAlbums(cursor);
+        return curToAlbums(cursor);
     }
     @Override//a
-    public ArrayList<Album>  searchRating(int rating){
+    public ArrayList<Album> searchAlbumRating(int rating){
         MongoCursor<Document> cursor = albumCollection.find(gt("review.avgRating", rating)).iterator();
-        return docToAlbums(cursor);
+        return curToAlbums(cursor);
     }
     @Override
     public ArrayList<Album>  searchArtist(String artist){
         MongoCursor<Document> cursor = albumCollection.find(eq("artist.name", Pattern.compile(artist))).iterator();
-        return docToAlbums(cursor);
+        return curToAlbums(cursor);
     }
-    
 
-    /**
-     * @return the loggedInUser
-     */
-    public LoggedInUser getLoggedInUser() {
-        return loggedInUser;
+    @Override
+    public  ArrayList<Movie>  searchMovieTitle(String title) {
+        MongoCursor<Document> cursor = movieCollection.find(eq("title", Pattern.compile(title))).iterator();
+        return curToMovies(cursor);
+    }
+
+    @Override
+    public  ArrayList<Movie> searchDirectror(String director) {
+        MongoCursor<Document> cursor = movieCollection.find(eq("director.name", Pattern.compile(director))).iterator();
+        return curToMovies(cursor);
+    }
+
+    @Override
+    public  ArrayList<Movie> searchMovieGenre(String genre) {
+        MongoCursor<Document> cursor = movieCollection.find(eq("genre", Pattern.compile(genre))).iterator();
+        return curToMovies(cursor);
+    }
+
+    @Override
+    public  ArrayList<Movie> searchMovieRating(int rating) {
+        MongoCursor<Document> cursor = movieCollection.find(gt("review.avgRating", rating)).iterator();
+        return curToMovies(cursor);
     }
 
     /**

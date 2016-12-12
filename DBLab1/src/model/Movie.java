@@ -5,22 +5,23 @@ import java.util.ArrayList;
 
 public class Movie {
 
-    private int movieID;
-    private ArrayList<String> genres;
+    private String movieID;
+    private String genres;
     private Director director;
     private String title;   
     private String releaseYear;
     private String length;
-    private int  rating = 0;
+    private double  rating = 0;
     private String genreAsString; //Only to feed cell value factory in table view
     private String directorAsString; //Only to feed cell value factory in table view
     private ArrayList<Review> reviews;
+    private String nrOfReviews;
 
     public Movie (String title) { //Just for testing
         this.title = title;
     }
-    public Movie (int movieID, String title, Director director, ArrayList<String> genres,
-                  String releaseYear, String length, int rating) {
+    public Movie (String movieID, String title, Director director, String genres,
+                  String releaseYear, String length, double rating,  String nrOfReviews) {
         this.movieID = movieID;
         this.genres = genres;
         this.title = title;
@@ -30,49 +31,42 @@ public class Movie {
         this.rating =rating;
         this.directorAsString = directorToString();
         this.genreAsString = genreToString();
+        this.nrOfReviews = nrOfReviews;
         reviews = new ArrayList<>();
     }
-    public Movie (ArrayList<String> genres, String title, Director director,
-            String releaseYear, String length) {
-                this.genres = genres;
-                this.title = title;
-                this.director = director;
-                this.releaseYear = releaseYear;
-                this.length = length;
-                this.directorAsString = directorToString();
-                this.genreAsString = genreToString();
-                reviews = new ArrayList<>();
-    }
     
-    public float getRating () {
+    public double getRating () {
         
         return rating;
     }
 
+    public String getReviews() {
+        return nrOfReviews;
+    }
     /**
      *
      * @return the albumID
      */
-    public int getMovieID(){return movieID;}
+    public String getMovieID(){return movieID;}
 
     /**
      * Set albumID
      * @param movieID
      */
-    public void setMovieID(int movieID){this.movieID = movieID;}
+    public void setMovieID(String movieID){this.movieID = movieID;}
 
 
     /**
      * @return the genre
      */
-    public ArrayList<String> getGenre() {
+    public String getGenre() {
         return genres;
     }
 
     /**
      * @param genres the genre to set
      */
-    public void setGenre(ArrayList<String> genres) {
+    public void setGenre(String genres) {
         this.genres = genres;
     }
 
@@ -97,9 +91,7 @@ public class Movie {
         return director;
     }
 
-    /**
-     * @param artists the artists to set
-     */
+
     public void setDirector(Director director) {
         this.director = director;
     }
@@ -139,12 +131,9 @@ public class Movie {
     }
     
     private String genreToString() {
-        String info = "";
-        for (String genre : genres) {
-            info += genre + ", ";
-        }
+
         
-        return info.replaceAll(", $", "");
+        return genres;
     }
 
     /**
@@ -161,12 +150,6 @@ public class Movie {
         return directorAsString;
     }
 
-    /**
-     * @return the reviews
-     */
-    public ArrayList<Review> getReviews() {
-        return reviews;
-    }
     
     public void addReview(Review review) {
         reviews.add(review);

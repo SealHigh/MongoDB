@@ -21,18 +21,17 @@ public interface DBQueries {
      * @param <T>
      * @return a list of all the records
      */
-    <T> ArrayList<T> getAllRecords();
+    <T> ArrayList<T> getAlbums();
 
+    <T> ArrayList<T> getMovies();
 
-    void insertRecord(Object o) throws ParseException;
+    void insertAlbum(Object o) throws ParseException;
+
+    void insertMovie(Object o) throws ParseException;
 
     void deleteRecord(Object o);
 
-    void rateAlbum(Object o);
-
-    int getAlbumRating(String albumId);
-
-    ArrayList<Artist> getArtists(String albumID);
+    void reviewRecord(int rating, String comment, String ID, String type) throws Exception;
 
     ArrayList<Review> getReviews(String albumID);
 
@@ -40,17 +39,20 @@ public interface DBQueries {
 
     double avgRatingFromDoc(Document cur, int rating);
 
-    ArrayList<String> getGenres(String albumID);
+    <T> ArrayList<T> searchAlbumTitle(String title);
 
-    <T> ArrayList<T> searchTitle(String title);
+    <T> ArrayList<T> searchArtist(String artist);
 
-    <T> ArrayList<T> searchArtist(String title);
-    
-    Director getDirector(String albumID);
+    <T> ArrayList<T> searchAlbumGenre(String genre);
 
-    <T> ArrayList<T> searchGenre(String title);
+    <T> ArrayList<T> searchAlbumRating(int rating);
 
-    <T> ArrayList<T> searchRating(int title);
+    <T> ArrayList<T> searchMovieTitle(String title);
 
+    <T> ArrayList<T> searchDirectror(String director);
+
+    <T> ArrayList<T> searchMovieGenre(String genre);
+
+    <T> ArrayList<T> searchMovieRating(int rating);
     
 }

@@ -174,7 +174,7 @@ public class View {
         
         //Create TableView
         mainTable = new TableView<>();
-        ObservableList<Album> albums = FXCollections.observableArrayList(ac.getAllRecords());
+        ObservableList<Album> albums = FXCollections.observableArrayList(ac.getAlbums());
         
         TableColumn titleCol = new TableColumn("Title");
         titleCol.setMinWidth(100);
@@ -268,7 +268,7 @@ public class View {
         //Add BorderPane to scene
         scene = new Scene(border, 1400, 600);
 
-        updateTextArea(ac.getAllRecords());
+        updateTextArea(ac.getAlbums());
     }
 
     public void updateTextArea(ArrayList<Album> albumList) {
@@ -489,8 +489,7 @@ public class View {
     public void initMovieTableView() {
         //Create TableView
         movieTable = new TableView<>();
-        ArrayList<Movie> empty = new ArrayList<>();
-        ObservableList<Movie> movies = FXCollections.observableArrayList(empty);
+        ObservableList<Movie> movies = FXCollections.observableArrayList(ac.getMovies());
         
         TableColumn movieTitleCol = new TableColumn("Title");
         movieTitleCol.setMinWidth(100);
@@ -530,12 +529,9 @@ public class View {
         
         TableColumn<Movie, String > movieNrOfReviewsCol = new TableColumn<>("Nr Of Reviews");
         movieNrOfReviewsCol.setMinWidth(100);
-        movieNrOfReviewsCol.setCellValueFactory(cellData -> {
-            ArrayList<Review> reviews = cellData.getValue().getReviews();
-            String nrOfReviewsString = Integer.toString(reviews.size());
-
-            return new ReadOnlyStringWrapper(nrOfReviewsString);
-        });
+        movieNrOfReviewsCol.setCellValueFactory(
+                new PropertyValueFactory<>("reviews")
+        );
         
         movieTitleCol.prefWidthProperty().bind(movieTable.widthProperty().divide(4.72)); //divide(5.03) instead of 5 to avoid scrollbar at bottom
         movieTitleCol.setStyle("-fx-alignment: CENTER;");
