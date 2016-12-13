@@ -194,7 +194,7 @@ public class AlbumCollection implements DBQueries {
 
     }
         else
-            System.out.println("User has left review, THROW EXCEPTION INSTEAD");
+            throw new Exception();
     }
 
 

@@ -73,24 +73,47 @@ public class View {
         
         searchAlbumsButton = new Button("Search Albums");
         searchAlbumsButton.setOnAction(new EventHandler<ActionEvent>() {
-                
+
             @Override
             public void handle(ActionEvent event) {
-                Optional<QueryInfo> result
-                        = queryDialog.showAndWait();
-                if (result.isPresent()) {
-                    QueryInfo qi = result.get();
-                    String userInput = qi.getUserInput();
-                    SearchOptions searchOption = qi.getSearchOption();
-                    try {
-                        con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
-                    } catch (Exception e) {
-                        Alert alert = new Alert(AlertType.ERROR, "Could not search albums!");
-                        alert.setTitle("");
-                        alert.setHeaderText(null);
-                        alert.showAndWait();
+                if (usingAlbums) {
+                    Optional<QueryInfo> result = queryDialog.showAndWait();
+
+                    if (result.isPresent()) {
+                        QueryInfo qi = result.get();
+                        String userInput = qi.getUserInput();
+                        SearchOptions searchOption = qi.getSearchOption();
+
+                        try {
+                            con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
+                        } catch (Exception e) {
+                            Alert alert = new Alert(AlertType.INFORMATION, "No results found");
+                            alert.setTitle("");
+                            alert.setHeaderText(null);
+                            alert.showAndWait();
+                        }
+
+                        queryDialog.clearFields();
                     }
-                    queryDialog.clearFields();
+                } else {
+                    Optional<QueryMovieInfo> result = queryMovieDialog.showAndWait();
+
+                    if (result.isPresent()) {
+                        QueryMovieInfo qi = result.get();
+                        String userInput = qi.getUserInput();
+                        SearchMovieOptions searchMovieOption = qi.getSearchOption();
+
+                        try {
+                            con.handleQueryMovieEvent(searchMovieOption, userInput); //try-catch här för om inget resultat?
+                        } catch (Exception e) {
+                            Alert alert = new Alert(AlertType.INFORMATION, "No results found");
+                            alert.setTitle("");
+                            alert.setHeaderText(null);
+                            alert.showAndWait();
+                        }
+
+                        queryMovieDialog.clearFields();
+                    }
                 }
             }
         });
@@ -100,13 +123,24 @@ public class View {
 
             @Override
             public void handle(ActionEvent event) {
-                try{
-                    con.handleGetAllAlbumsEvent();
-                } catch (Exception e) {
-                    Alert alert = new Alert(AlertType.ERROR, "Could not load albums!");
-                    alert.setTitle("");
-                    alert.setHeaderText(null);
-                    alert.showAndWait();
+                if (usingAlbums) {
+                    try {
+                        con.handleGetAllAlbumsEvent();
+                    } catch (Exception e) {
+                        Alert alert = new Alert(AlertType.ERROR, "Could not load albums!");
+                        alert.setTitle("");
+                        alert.setHeaderText(null);
+                        alert.showAndWait();
+                    }
+                } else {
+                    try {
+                        con.handleGetAllMoviesEvent();
+                    } catch (Exception e) {
+                        Alert alert = new Alert(AlertType.ERROR, "Could not load movies!");
+                        alert.setTitle("");
+                        alert.setHeaderText(null);
+                        alert.showAndWait();
+                    }
                 }
             }
         });
