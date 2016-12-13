@@ -43,6 +43,11 @@ public class View {
     private FlowPane loggedInPane;
     private MenuBar menuBar;
     private MenuBar lImenuBar;
+    private Button lIviewAllAlbumsButton;
+    private Button lIsearchAlbumsButton;
+    private Button lIaddAlbumButton;
+    private Button viewAllAlbumsButton;
+    private Button searchAlbumsButton;
     
     public View(AlbumCollection ac, Stage primaryStage) throws IOException, ClassNotFoundException {
         
@@ -66,7 +71,7 @@ public class View {
         initLoggedInPaneAndMenu(con);
 
         
-        Button searchAlbumsButton = new Button("Search Albums");
+        searchAlbumsButton = new Button("Search Albums");
         searchAlbumsButton.setOnAction(new EventHandler<ActionEvent>() {
                 
             @Override
@@ -90,7 +95,7 @@ public class View {
             }
         });
         
-        Button viewAllAlbumsButton = new Button("View All Albums");
+        viewAllAlbumsButton = new Button("View All Albums");
         viewAllAlbumsButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -113,10 +118,14 @@ public class View {
             public void handle(ActionEvent event) {
                 if (border.getCenter() != mainTable) {
                     usingAlbums = true;
+                    switchButtonText();
                     border.setCenter(mainTable);
+                    updateTextArea(ac.getAlbums());
                 } else {
                     usingAlbums = false;
+                    switchButtonText();
                     border.setCenter(movieTable);
+                    updateTextArea(ac.getMovies());
                 }
             }
         });
@@ -432,7 +441,8 @@ public class View {
     
     public void initLoggedInPaneAndMenu(Controller con) {
         //Create buttons 'Add Album', 'Search Albums' and 'View All' at bottom
-        Button lIaddAlbumButton = new Button("Add Album");
+       
+        lIaddAlbumButton = new Button("Add Album");
         lIaddAlbumButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -475,7 +485,7 @@ public class View {
             }
         });
         
-        Button lIsearchAlbumsButton = new Button("Search Albums");
+        lIsearchAlbumsButton = new Button("Search Albums");
         lIsearchAlbumsButton.setOnAction(new EventHandler<ActionEvent>() {
                 
             @Override
@@ -522,7 +532,7 @@ public class View {
             }
         });
         
-        Button lIviewAllAlbumsButton = new Button("View All Albums");
+        lIviewAllAlbumsButton = new Button("View All Albums");
         lIviewAllAlbumsButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -630,10 +640,14 @@ public class View {
             public void handle(ActionEvent event) {
                 if (border.getCenter() != mainTable) {
                     usingAlbums = true;
+                    switchButtonText();
                     border.setCenter(mainTable);
+                    updateTextArea(ac.getAlbums());
                 } else {
                     usingAlbums = false;
+                    switchButtonText();
                     border.setCenter(movieTable);
+                    updateTextArea(ac.getMovies());
                 }
             }
         });
@@ -806,6 +820,24 @@ public class View {
      */
     public BorderPane getBorder() {
         return border;
+    }
+    
+    private void switchButtonText() {
+        
+        if (usingAlbums) {
+            lIviewAllAlbumsButton.setText("View All Albums");
+            lIsearchAlbumsButton.setText("Search Albums");
+            lIaddAlbumButton.setText("Add Album");
+            viewAllAlbumsButton.setText("View All Albums");
+            searchAlbumsButton.setText("Search Albums");
+        } else {
+            lIviewAllAlbumsButton.setText("View All Movies");
+            lIsearchAlbumsButton.setText("Search Movies");
+            lIaddAlbumButton.setText("Add Movie");
+            viewAllAlbumsButton.setText("View All Movies");
+            searchAlbumsButton.setText("Search Movies");
+        }
+        
     }
     
 }
