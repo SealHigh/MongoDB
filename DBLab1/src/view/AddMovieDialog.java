@@ -18,21 +18,19 @@ import javafx.util.Callback;
 public class AddMovieDialog extends Dialog<AddMovieInfo> {
     
     private TextField title;
-    private TextField releaseDate;
+    private TextField releaseYear;
     private TextField length;
-    private TextField numberOfSongs;
     private TextField genres;
-    private TextField artists;
-
+    private TextField director;
+    
     AddMovieDialog() {
         super(); // super constructor, modal by default
         
         title = new TextField();
-        releaseDate = new TextField();
+        releaseYear = new TextField();
         length = new TextField();
-        numberOfSongs = new TextField();
         genres = new TextField();
-        artists = new TextField();
+        director = new TextField();
         
         
         GridPane grid = new GridPane();
@@ -41,16 +39,14 @@ public class AddMovieDialog extends Dialog<AddMovieInfo> {
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.add(new Label("Title"), 1, 1);
         grid.add(title, 2, 1);
-        grid.add(new Label("Artists"), 1, 2);
-        grid.add(artists, 2, 2);
-        grid.add(new Label("Number of songs"), 1, 3);
-        grid.add(numberOfSongs, 2, 3);
-        grid.add(new Label("Release date(yyyymmdd)"), 1, 4);
-        grid.add(releaseDate, 2, 4);
-        grid.add(new Label("Length"), 1, 5);
-        grid.add(length, 2, 5);
-        grid.add(new Label("Genre"), 1, 6);
-        grid.add(genres, 2, 6);
+        grid.add(new Label("Director"), 1, 2);
+        grid.add(director, 2, 2);
+        grid.add(new Label("Release year(yyyy)"), 1, 3);
+        grid.add(releaseYear, 2, 3);
+        grid.add(new Label("Length"), 1, 4);
+        grid.add(length, 2, 4);
+        grid.add(new Label("Genre"), 1, 5);
+        grid.add(genres, 2, 5);
         
         this.getDialogPane().setContent(grid);
 
@@ -79,11 +75,10 @@ public class AddMovieDialog extends Dialog<AddMovieInfo> {
 
                     AddMovieInfo addMovieInfo = new AddMovieInfo(
                             title.getText(),
-                            releaseDate.getText(),
+                            releaseYear.getText(),
                             length.getText(),
-                            numberOfSongs.getText(),
                             genres.getText(),
-                            artists.getText());
+                            director.getText());
                             
                     AddMovieDialog.this.clearFields();
                     return addMovieInfo;
@@ -113,11 +108,10 @@ public class AddMovieDialog extends Dialog<AddMovieInfo> {
 
     public void clearFields() {
         title.setText("");
-        releaseDate.setText("");
+        releaseYear.setText("");
         length.setText("");
-        numberOfSongs.setText("");
         genres.setText("");
-        artists.setText("");
+        director.setText("");
     }
 
     void showAlert(String message) {
@@ -130,45 +124,39 @@ public class AddMovieDialog extends Dialog<AddMovieInfo> {
 class AddMovieInfo {
 
     private final String title;
-    private final String releaseDate;
+    private final String releaseYear;
     private final String length;
-    private final String numberOfSongs;
     private final String genres;
-    private final String artists;
+    private final String director;
 
 
-    AddMovieInfo(String title, String releaseDate, String length, String numberOfSongs,
-            String genres, String artists) {
+    AddMovieInfo(String title, String releaseYear, String length,
+            String genres, String director) {
         this.title = title;
-        this.releaseDate = releaseDate;
+        this.releaseYear = releaseYear;
         this.length = length;
-        this.numberOfSongs = numberOfSongs;
         this.genres = genres;
-        this.artists = artists;
+        this.director = director;
     }
 
     String getTitle() {
         return title;
     }
     
-    String getReleaseDate() {
-        return releaseDate;
+    String getReleaseYear() {
+        return releaseYear;
     }
     
     String getLength() {
         return length;
     }
     
-    String getNrOfSongs() {
-        return numberOfSongs;
-    }
-    
     String getGenres() {
         return genres;
     }
     
-    String getArtists() {
-        return artists;
+    String getDirector() {
+        return director;
     }
 
 }

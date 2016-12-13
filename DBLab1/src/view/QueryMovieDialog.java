@@ -19,13 +19,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
-import model.SearchOptions;
+import model.SearchMovieOptions;
 
 
 public class QueryMovieDialog extends Dialog<QueryMovieInfo> {
     
     private TextField userInput;
-    private ComboBox<SearchOptions> searchComboBox;
+    private ComboBox<SearchMovieOptions> searchComboBox;
 
     QueryMovieDialog() {
         super(); // super constructor, modal by default
@@ -83,8 +83,8 @@ public class QueryMovieDialog extends Dialog<QueryMovieInfo> {
         });
         */
         searchComboBox = new ComboBox<>();
-        searchComboBox.getItems().setAll(SearchOptions.values()); //Just ugly lowercase so far!
-        searchComboBox.setValue(SearchOptions.TITLE); //Preset Album option
+        searchComboBox.getItems().setAll(SearchMovieOptions.values()); //Just ugly lowercase so far!
+        searchComboBox.setValue(SearchMovieOptions.TITLE); //Preset Album option
         
         GridPane grid = new GridPane();
         grid.setVgap(5);
@@ -135,7 +135,7 @@ public class QueryMovieDialog extends Dialog<QueryMovieInfo> {
 
     public void clearFields() {
         userInput.setText("");
-        searchComboBox.setValue(SearchOptions.TITLE);
+        searchComboBox.setValue(SearchMovieOptions.TITLE);
     }
 
     void showAlert(String message) {
@@ -148,9 +148,9 @@ public class QueryMovieDialog extends Dialog<QueryMovieInfo> {
 class QueryMovieInfo {
 
     private final String userInput;
-    private final SearchOptions searchOption;
+    private final SearchMovieOptions searchOption;
 
-    QueryMovieInfo(String userInput, SearchOptions searchOption) {
+    QueryMovieInfo(String userInput, SearchMovieOptions searchOption) {
         this.userInput = userInput;
         this.searchOption = searchOption;
     }
@@ -159,7 +159,7 @@ class QueryMovieInfo {
         return userInput;
     }
     
-    SearchOptions getSearchOption() {
+    SearchMovieOptions getSearchOption() {
         return searchOption;
     }
 }

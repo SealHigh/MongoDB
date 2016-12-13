@@ -11,17 +11,18 @@ public class Album {
     private String title;   
     private String releaseDate;
     private String length;
-    private String  rating;
+    private double  rating;
     private String numberOfSongs;
     private String genreAsString; //Only to feed cell value factory in table view
     private String artistAsString; //Only to feed cell value factory in table view
-    private ArrayList<Review> reviews;
+    private String reviews;
 
     public Album (String title) { //Just for testing
         this.title = title;
     }
+
     public Album (String albumID, String title, ArrayList<Artist> artists, ArrayList<String> genres,
-                  String releaseDate, String length, String numberOfSongs, String rating) {
+                  String releaseDate, String length, String numberOfSongs, double rating, String nrOfReviews) {
         this.albumID = albumID;
         this.genres = genres;
         this.title = title;
@@ -29,13 +30,14 @@ public class Album {
         this.releaseDate = releaseDate;
         this.length = length;
         this.numberOfSongs = numberOfSongs;
-        this.rating =rating;
+        this.rating = rating;
         this.artistAsString = artistToString();
+        this.reviews = nrOfReviews;
         this.genreAsString = genreToString();
-        reviews = new ArrayList<>();
     }
+
     public Album (ArrayList<String> genres, String title, ArrayList<Artist> artists,
-            String releaseDate, String length, String numberOfSongs) {
+            String releaseDate, String length, String numberOfSongs, int nrOfReviews) {
                 this.genres = genres;
                 this.title = title;
                 this.artists = artists;
@@ -44,13 +46,13 @@ public class Album {
                 this.numberOfSongs = numberOfSongs;
                 this.artistAsString = artistToString();
                 this.genreAsString = genreToString();
-                reviews = new ArrayList<>();
+
     }
 
 
     public String getRating () {
         
-        return rating;
+        return String.format("%.1f",rating);
     }
 
     /**
@@ -189,12 +191,8 @@ public class Album {
     /**
      * @return the reviews
      */
-    public ArrayList<Review> getReviews() {
+    public String getReviews() {
         return reviews;
-    }
-    
-    public void addReview(Review review) {
-        reviews.add(review);
     }
     
 }
