@@ -64,13 +64,14 @@ public class View {
         usingAlbums = true;
         
         border = new BorderPane();
-        
+
         initReviewTableView();
         initMovieTableView();
         initMovieReviewTableView();
         initLoggedInPaneAndMenu(con);
 
-        
+
+
         searchAlbumsButton = new Button("Search Albums");
         searchAlbumsButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -87,10 +88,7 @@ public class View {
                         try {
                             con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
                         } catch (Exception e) {
-                            Alert alert = new Alert(AlertType.INFORMATION, "No results found");
-                            alert.setTitle("");
-                            alert.setHeaderText(null);
-                            alert.showAndWait();
+                            displayError("No results found");
                         }
 
                         queryDialog.clearFields();
@@ -488,12 +486,11 @@ public class View {
                         
                             try {
                             con.handleAddAlbumEvent(info.getTitle(), info.getArtists(),
-                                    info.getReleaseDate(), info.getNrOfSongs(), info.getLength(), info.getGenres());
+                                    ""+Integer.parseInt(info.getReleaseDate()),
+                                    ""+Integer.parseInt(info.getNrOfSongs()),
+                                    ""+Integer.parseInt(info.getLength()), info.getGenres());
                             } catch (Exception e) {
-                                Alert alert = new Alert(AlertType.ERROR, "Could not add album!");
-                                alert.setTitle("");
-                                alert.setHeaderText(null);
-                                alert.showAndWait();
+                                displayError("Wrong format!");
                             }
 
                             addDialog.clearFields();
@@ -505,9 +502,9 @@ public class View {
                         
                             try {
                                 con.handleAddMovieEvent(info.getTitle(), info.getDirector(),
-                                info.getReleaseYear(), info.getLength(), info.getGenres());
+                                        ""+Integer.parseInt(info.getReleaseYear()),  ""+Integer.parseInt(info.getLength()), info.getGenres());
                             } catch (Exception e) {
-                                Alert alert = new Alert(AlertType.ERROR, "Could not add movie!");
+                                Alert alert = new Alert(AlertType.ERROR, "Wrong format!");
                                 alert.setTitle("");
                                 alert.setHeaderText(null);
                                 alert.showAndWait();
@@ -873,6 +870,11 @@ public class View {
         }
         
     }
-    
+    public void displayError(String msg){
+        Alert alert = new Alert(AlertType.INFORMATION, msg);
+        alert.setTitle("");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
 }
 

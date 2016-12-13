@@ -42,12 +42,13 @@ public class AlbumCollection implements DBQueries {
      * @param cursor of the collection to make into an album
      * @return  list of albums
      */
-    private ArrayList<Album> curToAlbums(MongoCursor<Document> cursor) {
+    private ArrayList<Album> curToAlbums(MongoCursor<Document> cursor){
         ArrayList<Album> albums = new ArrayList<>();
         while (cursor.hasNext()) {
             ArrayList<Artist> artists = new ArrayList<>();
             ArrayList<String> genre = new ArrayList<>();
             Document cur = cursor.next();
+
             try {
                 Document review = (Document) cur.get("review");
                 ((List<Document>) cur.get("artist")).forEach(a -> artists.add(new Artist(a.getString("name"), "Brit")));
@@ -56,11 +57,14 @@ public class AlbumCollection implements DBQueries {
                         cur.get("releaseDate").toString(), cur.get("length").toString(), cur.get("nrOfSongs").toString(),
                         review.getDouble("avgRating"), review.getInteger("count").toString());
 
-
                 albums.add(album);
-            } catch (Exception e) {
-                //Throw exception could not load document
+            }catch (Exception e){
+                //if a album fails to load do nothing since it would only be annoying to get an alert for it
+                //could easily throw exception here otherwise, just a prefrence
             }
+
+
+
         }
         return albums;
     }
@@ -105,7 +109,7 @@ public class AlbumCollection implements DBQueries {
     }
 
     @Override
-    public void insertAlbum(Object o) throws ParseException {
+    public void insertAlbum(Object o) throws DatabaseException {
         Album album = (Album)o;
 
         ArrayList<Document> artists = new ArrayList<>();
@@ -125,7 +129,7 @@ public class AlbumCollection implements DBQueries {
     }
 
     @Override
-    public void insertMovie(Object o) throws ParseException {
+    public void insertMovie(Object o) throws DatabaseException {
         Movie movie = (Movie) o;
 
         Document movieDocument = new Document("title", movie.getTitle())
@@ -194,7 +198,7 @@ public class AlbumCollection implements DBQueries {
 
     }
         else
-            throw new Exception();
+            throw new DatabaseException();
     }
 
 
@@ -208,17 +212,18 @@ public class AlbumCollection implements DBQueries {
     }
 
     @Override
-    public void deleteAlbum(Object o) {
+    public void deleteAlbum(Object o) throws DatabaseException{
+        if(o == null)
+            throw new DatabaseException("No album selected");
         Album album = (Album) o;
-        try {
-            albumCollection.findOneAndDelete(new Document("_id" ,new ObjectId(album.getAlbumID())));
-        } catch (MongoException me) {
-            throw me;
-        }
+        albumCollection.findOneAndDelete(new Document("_id" ,new ObjectId(album.getAlbumID())));
+
     }
 
     @Override
-    public void deleteMovie(Object o) {
+    public void deleteMovie(Object o) throws DatabaseException{
+        if(o == null)
+            throw new DatabaseException("No movie slected!");
         Movie movie = (Movie) o;
         movieCollection.findOneAndDelete(new Document("_id" ,new ObjectId(movie.getMovieID())));
     }
@@ -260,24 +265,24 @@ public class AlbumCollection implements DBQueries {
 
 
     @Override
-    public ArrayList<Album> searchAlbumTitle(String title){
+    public ArrayList<Album> searchAlbumTitle(String title) {
         MongoCursor<Document> cursor = albumCollection.find(eq("title", Pattern.compile(title))).iterator();
         return curToAlbums(cursor);
     }
 
 
     @Override
-    public ArrayList<Album> searchAlbumGenre(String genre){
+    public ArrayList<Album> searchAlbumGenre(String genre) {
         MongoCursor<Document> cursor = albumCollection.find(eq("genre", Pattern.compile(genre))).iterator();
         return curToAlbums(cursor);
     }
     @Override//a
-    public ArrayList<Album> searchAlbumRating(int rating){
+    public ArrayList<Album> searchAlbumRating(int rating) {
         MongoCursor<Document> cursor = albumCollection.find(gt("review.avgRating", rating)).iterator();
         return curToAlbums(cursor);
     }
     @Override
-    public ArrayList<Album>  searchArtist(String artist){
+    public ArrayList<Album>  searchArtist(String artist) {
         MongoCursor<Document> cursor = albumCollection.find(eq("artist.name", Pattern.compile(artist))).iterator();
         return curToAlbums(cursor);
     }

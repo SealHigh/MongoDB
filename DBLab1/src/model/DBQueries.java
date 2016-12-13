@@ -25,13 +25,13 @@ public interface DBQueries {
 
     <T> ArrayList<T> getMovies();
 
-    void insertAlbum(Object o) throws ParseException;
+    void insertAlbum(Object o) throws DatabaseException;
 
-    void insertMovie(Object o) throws ParseException;
+    void insertMovie(Object o) throws DatabaseException;
 
-    void deleteAlbum(Object o);
+    void deleteAlbum(Object o) throws DatabaseException;
 
-    void deleteMovie(Object o);
+    void deleteMovie(Object o) throws DatabaseException;
 
     void reviewRecord(int rating, String comment, String ID, String type) throws Exception;
 
@@ -41,13 +41,13 @@ public interface DBQueries {
 
     double avgRatingFromDoc(Document cur, int rating);
 
-    <T> ArrayList<T> searchAlbumTitle(String title);
+    <T> ArrayList<T> searchAlbumTitle(String title) ;
 
-    <T> ArrayList<T> searchArtist(String artist);
+    <T> ArrayList<T> searchArtist(String artist) ;
 
-    <T> ArrayList<T> searchAlbumGenre(String genre);
+    <T> ArrayList<T> searchAlbumGenre(String genre) ;
 
-    <T> ArrayList<T> searchAlbumRating(int rating);
+    <T> ArrayList<T> searchAlbumRating(int rating) ;
 
     <T> ArrayList<T> searchMovieTitle(String title);
 

@@ -1,17 +1,11 @@
 
 package view;
 
-import model.Album;
-import model.AlbumCollection;
+import model.*;
 
 import java.util.ArrayList;
 
 import javafx.scene.control.Alert;
-import model.Artist;
-import model.Director;
-import model.Movie;
-import model.SearchMovieOptions;
-import model.SearchOptions;
 
 
 public class Controller {
@@ -27,8 +21,18 @@ public class Controller {
     public void handleDeleteAlbumEvent(Album selectedAlbum) {
         new Thread() {
             public void run() {
-                ac.deleteAlbum(selectedAlbum);
-                ArrayList<Album>  albums = ac.getAlbums();
+                try {
+                    ac.deleteAlbum(selectedAlbum);
+                }catch (DatabaseException de){
+                    javafx.application.Platform.runLater(
+                            new Runnable() {
+                                public void run() {
+                                    view.displayError("Could not delete album!");
+                                }
+                            });
+                }
+                ArrayList<Album> albums = ac.getAlbums();
+
                 javafx.application.Platform.runLater(
                         new Runnable() {
                             public void run() {
@@ -43,7 +47,17 @@ public class Controller {
     public void handleDeleteMovieEvent(Movie selectedMovie) {
         new Thread() {
             public void run() {
-                ac.deleteMovie(selectedMovie);
+                try {
+                    ac.deleteMovie(selectedMovie);
+                }
+                catch (DatabaseException de){
+                    javafx.application.Platform.runLater(
+                            new Runnable() {
+                                public void run() {
+                                    view.displayError("Could not delete movie!");
+                                }
+                            });
+                }
                 ArrayList<Movie>  movies = ac.getMovies();
                 javafx.application.Platform.runLater(
                         new Runnable() {
@@ -63,14 +77,10 @@ public class Controller {
                     ac.reviewRecord(rating, comment, albumID, "album");
                 }
                 catch (Exception e){
-                    e.printStackTrace();
                     javafx.application.Platform.runLater(
                             new Runnable() {
                                 public void run() {
-                                    Alert alert = new Alert(Alert.AlertType.ERROR, "You can only make one review for each album/film ");
-                                    alert.setTitle("");
-                                    alert.setHeaderText(null);
-                                    alert.showAndWait();
+                                    view.displayError("You can only make one review for each album/film ");
                                 }
                             });
                 }
@@ -295,7 +305,7 @@ public class Controller {
                     javafx.application.Platform.runLater(
                             new Runnable() {
                                 public void run() {
-                                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Wrong format. Example: ('title', 'name', 'yyyy-mm-dd', 10, 30, 'Rock'  ");
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Could not add album!");
                                     alert.setTitle("");
                                     alert.setHeaderText(null);
                                     alert.showAndWait();
