@@ -77,8 +77,21 @@ public class AlbumCollection implements DBQueries {
             ArrayList<String> genre = new ArrayList<>();
             Document cur = cursor.next();
 
-            try {((List<Document>) cur.get("artist")).forEach(a -> artists.add(new Artist(a.getString("name"), "Brit")));}catch (Exception e){}
-            try {genre.addAll((List<String>)cur.get("genre"));}catch (Exception e){}
+            try {
+                ((List<Document>) cur.get("artist")).forEach(a -> artists.add(new Artist(a.getString("name"), "Brit")));
+            } catch (MongoException me)
+            {
+                System.out.println("docToAlbums har kastat!");
+                throw me;
+            }
+            
+            try {
+                genre.addAll((List<String>)cur.get("genre"));
+            } catch (MongoException me){
+                System.out.println("docToAlbums har kastat!");
+                throw me;
+            }
+            
             avgRating = avgRatingFromDoc(cur);
 
             Album album = new Album(cur.get("_id").toString(),cur.getString("title"),artists, genre,
@@ -92,8 +105,20 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public ArrayList<Album> getAllRecords() {
-        MongoCursor<Document> cursor = albumCollection.find().iterator();
-        return docToAlbums(cursor);
+        MongoCursor<Document> cursor;
+        try {
+            cursor = albumCollection.find().iterator();
+        } catch (MongoException me) {
+            System.out.println("getAllRecords har kastat!");
+            throw me;
+        }
+        
+        try {
+            return docToAlbums(cursor);
+        } catch (Exception e) {
+            System.out.println("getAllRecords har kastat!");
+            throw e;
+        }
     }
 
     @Override
@@ -105,16 +130,24 @@ public class AlbumCollection implements DBQueries {
 
         Document albumDocument = new Document("title", album.getTitle()).append("nrOfSongs",album.getNumberOfSongs()).append(
                 "releaseDate", album.getReleaseDate()).append("length",album.getLength()).append("artist", artists).append("genre",album.getGenre() );
-
-        albumCollection.insertOne(albumDocument);
+        try {
+            albumCollection.insertOne(albumDocument);
+        } catch (MongoException me) {
+            throw me;
+        }
 
     }
 
     @Override
     public boolean userLogIn(String userName, String password) {
-
-        MongoCursor<Document> cursor = userCollection.find(new Document("userName", userName).append("password", password)).iterator();
-
+        MongoCursor<Document> cursor;
+        try {
+            cursor = userCollection.find(new Document("userName", userName).append("password", password)).iterator();
+        } catch (MongoException me) {
+            cursor = null;
+            throw me;
+        }
+        
         if(cursor.hasNext()) {
             Document cur = cursor.next();
             this.loggedInUser = new LoggedInUser(cur.getString("userName"), cur.get("_id").toString());
@@ -126,10 +159,12 @@ public class AlbumCollection implements DBQueries {
 
 
     public void setAlbumRating(int rating, String comment, String albumID) throws Exception{
-        if(!reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append("albumID", albumID)).iterator().hasNext())
-            reviewCollection.insertOne(new Document("rating", rating).append("comment", comment).append("userID", new String(loggedInUser.getUserId())).append("albumID",albumID));
-        else
-            System.out.println("User allready has review on this album, throw exception");
+        try {
+            if(!reviewCollection.find(new Document("userID", loggedInUser.getUserId()).append("albumID", albumID)).iterator().hasNext())
+                reviewCollection.insertOne(new Document("rating", rating).append("comment", comment).append("userID", new String(loggedInUser.getUserId())).append("albumID",albumID));
+        } catch (MongoException me) {
+            throw me;
+        }
     }
 
 
@@ -138,7 +173,11 @@ public class AlbumCollection implements DBQueries {
     @Override
     public void deleteRecord(Object o) {
         Album album = (Album) o;
-        albumCollection.findOneAndDelete(new Document("_id" ,new ObjectId(album.getAlbumID())));
+        try {
+            albumCollection.findOneAndDelete(new Document("_id" ,new ObjectId(album.getAlbumID())));
+        } catch (MongoException me) {
+            throw me;
+        }
     }
 
     @Override
@@ -161,7 +200,13 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public User getUser(String albumID){
-        MongoCursor<Document> userCur = userCollection.find(new Document("_id", new ObjectId(albumID))).iterator();
+        MongoCursor<Document> userCur;
+        try {
+            userCur = userCollection.find(new Document("_id", new ObjectId(albumID))).iterator();
+        } catch (MongoException me) {
+            userCur = null;
+            throw me;
+        }
         Document userDoc = userCur.next();
         User user = new User(userDoc.getString("userName"));
         return user;
@@ -170,7 +215,13 @@ public class AlbumCollection implements DBQueries {
 
     @Override
     public ArrayList<Review> getReviews(String albumID){
-        MongoCursor<Document> cursor = reviewCollection.find(new Document("albumID", albumID)).iterator();
+        MongoCursor<Document> cursor;
+        try {
+            cursor = reviewCollection.find(new Document("albumID", albumID)).iterator();
+        } catch (MongoException me) {
+            cursor = null;
+            throw me;
+        }
         ArrayList<Review> reviews = new ArrayList<>();
         while(cursor.hasNext()) {
             Document cur = cursor.next();
@@ -197,26 +248,69 @@ public class AlbumCollection implements DBQueries {
 
 
     @Override
-    public ArrayList<Album>  searchTitle(String title){
-        MongoCursor<Document> cursor = albumCollection.find(new Document("title", Pattern.compile(title))).iterator();
-        return docToAlbums(cursor);
+    public ArrayList<Album>  searchTitle(String title) {
+        MongoCursor<Document> cursor;
+        try {
+            cursor = albumCollection.find(new Document("title", Pattern.compile(title))).iterator();
+        } catch (MongoException me) {
+            cursor = null;
+            throw me;
+        }
+        
+        try {
+            return docToAlbums(cursor);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
 
     @Override
     public ArrayList<Album>  searchGenre(String genre){
-        MongoCursor<Document> cursor = albumCollection.find(new Document("genre", Pattern.compile(genre))).iterator();
-        return docToAlbums(cursor);
+        MongoCursor<Document> cursor;
+        try {
+            cursor = albumCollection.find(new Document("genre", Pattern.compile(genre))).iterator();
+        } catch (MongoException me) {
+            cursor = null;
+            throw me;
+        }
+        
+        try {
+            return docToAlbums(cursor);
+        } catch (Exception e) {
+            throw e;
+        }
     }
     @Override//a
     public ArrayList<Album>  searchRating(String rating){
-        MongoCursor<Document> cursor = albumCollection.find(new Document("rating", Pattern.compile(rating))).iterator();
-        return docToAlbums(cursor);
+        MongoCursor<Document> cursor;
+        try {
+            cursor = albumCollection.find(new Document("rating", Pattern.compile(rating))).iterator();
+        } catch (MongoException me) {
+            cursor = null;
+            throw me;
+        }
+        
+        try {
+            return docToAlbums(cursor);
+        } catch (Exception e) {
+            throw e;
+        }
     }
     @Override
     public ArrayList<Album>  searchArtist(String artist){
-        MongoCursor<Document> cursor = albumCollection.find(new Document("artist", Pattern.compile(artist))).iterator();
-        return docToAlbums(cursor);
+        MongoCursor<Document> cursor;
+        try {
+            cursor = albumCollection.find(new Document("artist", Pattern.compile(artist))).iterator();
+        } catch (MongoException me) {
+            cursor = null;
+            throw me;
+        }
+        try {
+            return docToAlbums(cursor);
+        } catch (Exception e) {
+            throw e;
+        }
     }
     
 

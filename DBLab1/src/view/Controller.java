@@ -27,8 +27,18 @@ public class Controller {
     public void handleDeleteAlbumEvent(Album selectedAlbum) {
         new Thread() {
             public void run() {
-                ac.deleteRecord(selectedAlbum);
-                ArrayList<Album>  albums = ac.getAllRecords();
+                try {
+                    ac.deleteRecord(selectedAlbum);
+                } catch (Exception e) {
+                    throw e;
+                }
+                
+                ArrayList<Album>  albums;
+                try {
+                    albums = ac.getAllRecords();
+                } catch (Exception e) {
+                    throw e;
+                }
                 javafx.application.Platform.runLater(
                         new Runnable() {
                             public void run() {
@@ -57,7 +67,13 @@ public class Controller {
                                 }
                             });
                 }
-                ArrayList<Album> albums = ac.getAllRecords();
+                
+                ArrayList<Album> albums;
+                try {
+                    albums = ac.getAllRecords();
+                } catch (Exception e) {
+                    throw e;
+                }
                 javafx.application.Platform.runLater(
                         new Runnable() {
                             public void run() {
@@ -70,6 +86,7 @@ public class Controller {
 
 
     public void handleGetAllAlbumsEvent() {
+    try {    
         new Thread() {
             public void run() {
                 ArrayList<Album> albums = ac.getAllRecords();
@@ -81,7 +98,10 @@ public class Controller {
                         });
             }
         }.start();
-        
+    } catch (Exception e) {
+        System.out.println("handleGetAllAlbumsEvent har kastat!");
+        throw e;
+    }    
     }
 
     public void handleQueryEvent(SearchOptions searchOption, String userInput) {
@@ -90,7 +110,12 @@ public class Controller {
         switch (searchOption.toString()){
             case "title":  new Thread() {
                                 public void run() {
-                                    ArrayList<Album> albums = ac.searchTitle(userInput);
+                                    ArrayList<Album> albums;
+                                    try {
+                                        albums = ac.searchTitle(userInput);
+                                    } catch (Exception e) {
+                                        throw e;                   
+                                    }
                                     javafx.application.Platform.runLater(
                                             new Runnable() {
                                                 public void run() {
@@ -102,32 +127,47 @@ public class Controller {
                             break;
             case "artist":  new Thread() {
                                 public void run() {
-                                    ArrayList<Album> albums =ac.searchArtist(userInput);;
+                                    ArrayList<Album> albums;
+                                    try {
+                                        albums =ac.searchArtist(userInput);;
+                                    } catch (Exception e) {
+                                        throw e;
+                                    }
                                     javafx.application.Platform.runLater(
-                                            new Runnable() {
-                                                public void run() {
-                                                    view.updateTextArea(albums);
-                                                }
-                                            });
+                                        new Runnable() {
+                                            public void run() {
+                                                view.updateTextArea(albums);
+                                            }
+                                    });
                                 }
                             }.start();
                             break;
 
             case "genre":  new Thread() {
                                 public void run() {
-                                    ArrayList<Album> albums =ac.searchGenre(userInput);;
+                                    ArrayList<Album> albums;
+                                    try {
+                                        albums =ac.searchGenre(userInput);;
+                                    } catch (Exception e) {
+                                        throw e;
+                                    }
                                     javafx.application.Platform.runLater(
-                                            new Runnable() {
-                                                public void run() {
-                                                    view.updateTextArea(albums);
-                                                }
-                                            });
+                                        new Runnable() {
+                                            public void run() {
+                                                view.updateTextArea(albums);
+                                            }
+                                    });
                                 }
                             }.start();
                             break;
             case "rating":  new Thread() {
                                 public void run() {
-                                    ArrayList<Album> albums =ac.searchRating(userInput);
+                                    ArrayList<Album> albums;
+                                    try {
+                                        albums =ac.searchRating(userInput);
+                                    } catch (Exception e) {
+                                        throw e;
+                                    }
                                     javafx.application.Platform.runLater(
                                             new Runnable() {
                                                 public void run() {
@@ -167,10 +207,16 @@ public class Controller {
                                 }
                             });
                 }
-
-                ArrayList<Album> albums =  ac.getAllRecords();
+                
+                ArrayList<Album> albums;
+                try {
+                    albums =  ac.getAllRecords();
+                } catch (Exception e) {
+                    throw e;
+                }
                 javafx.application.Platform.runLater(
                         new Runnable() {
+                            @Override
                             public void run() {
                                 view.updateTextArea(albums);
                             }
@@ -182,7 +228,11 @@ public class Controller {
 
 
     public boolean handleLogInEvent(String userName, String password) {
-        return ac.userLogIn(userName,password); //Maybe run this in thread aswell?
+        try {
+            return ac.userLogIn(userName,password); //Maybe run this in thread aswell?
+        } catch (Exception e) {
+            throw e;          
+        }
     }
     
     public void handleLogOutEvent() {

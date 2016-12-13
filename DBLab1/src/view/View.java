@@ -68,7 +68,14 @@ public class View {
                     QueryInfo qi = result.get();
                     String userInput = qi.getUserInput();
                     SearchOptions searchOption = qi.getSearchOption();
-                    con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
+                    try {
+                        con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
+                    } catch (Exception e) {
+                        Alert alert = new Alert(AlertType.ERROR, "Could not search albums!");
+                        alert.setTitle("");
+                        alert.setHeaderText(null);
+                        alert.showAndWait();
+                    }
                     queryDialog.clearFields();
                 }
             }
@@ -79,7 +86,14 @@ public class View {
 
             @Override
             public void handle(ActionEvent event) {
-                con.handleGetAllAlbumsEvent();
+                try{
+                    con.handleGetAllAlbumsEvent();
+                } catch (Exception e) {
+                    Alert alert = new Alert(AlertType.ERROR, "Could not load albums!");
+                    alert.setTitle("");
+                    alert.setHeaderText(null);
+                    alert.showAndWait();
+                }
             }
         });
 
@@ -165,7 +179,17 @@ public class View {
         
         //Create TableView
         mainTable = new TableView<>();
-        ObservableList<Album> albums = FXCollections.observableArrayList(ac.getAllRecords());
+        ArrayList<Album> arrayListAlbums;
+        try {
+            arrayListAlbums = ac.getAllRecords();
+        } catch (Exception e) {
+            Alert alert = new Alert(AlertType.ERROR, "Could not load albums!");
+                alert.setTitle("");
+                alert.setHeaderText(null);
+                alert.showAndWait();
+                arrayListAlbums = new ArrayList<>();
+        }
+        ObservableList<Album> albums = FXCollections.observableArrayList(arrayListAlbums);
         
         TableColumn titleCol = new TableColumn("Title");
         titleCol.setMinWidth(100);
@@ -242,7 +266,16 @@ public class View {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Album rowData = row.getItem();
                     if(rowData.getReviews() != null) {
-                        ArrayList<Review> reviewData = ac.getReviews(rowData.getAlbumID());
+                        ArrayList<Review> reviewData;
+                        try {
+                            reviewData = ac.getReviews(rowData.getAlbumID());
+                        } catch (Exception e) {
+                            Alert alert = new Alert(AlertType.ERROR, "Could not load albums!");
+                                alert.setTitle("");
+                                alert.setHeaderText(null);
+                                alert.showAndWait();
+                                reviewData = new ArrayList<>();
+                        }
                         reviewTable.setItems(FXCollections.observableArrayList(reviewData));
                         border.setCenter(reviewTable);
                     }
@@ -261,8 +294,14 @@ public class View {
         
         //Add BorderPane to scene
         scene = new Scene(border, 1400, 600);
-
-        updateTextArea(ac.getAllRecords());
+        try {
+            updateTextArea(ac.getAllRecords());
+        } catch (Exception e) {
+            Alert alert = new Alert(AlertType.ERROR, "Could not load albums!");
+            alert.setTitle("");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+        }        
     }
 
     public void updateTextArea(ArrayList<Album> albumList) {
@@ -338,10 +377,16 @@ public class View {
                         = addDialog.showAndWait();
                 if (result.isPresent()) {
                     AddInfo info = result.get();
-
+                        
+                        try {
                         con.handleAddAlbumEvent(info.getTitle(), info.getArtists(),
                                 info.getReleaseDate(), info.getNrOfSongs(), info.getLength(), info.getGenres());
-
+                        } catch (Exception e) {
+                            Alert alert = new Alert(AlertType.ERROR, "Could not add album!");
+                            alert.setTitle("");
+                            alert.setHeaderText(null);
+                            alert.showAndWait();
+                        }
 
                     addDialog.clearFields();
                 }
@@ -360,7 +405,14 @@ public class View {
                     QueryInfo qi = result.get();
                     String userInput = qi.getUserInput();
                     SearchOptions searchOption = qi.getSearchOption();
-                    con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
+                    try {
+                        con.handleQueryEvent(searchOption, userInput); //try-catch här för om inget resultat?
+                    } catch (Exception e) {
+                        Alert alert = new Alert(AlertType.ERROR, "Could not find any albums!");
+                        alert.setTitle("");
+                        alert.setHeaderText(null);
+                        alert.showAndWait();
+                    }
                     queryDialog.clearFields();
                 }
             }
@@ -371,11 +423,14 @@ public class View {
 
             @Override
             public void handle(ActionEvent event) {
-                Alert alert = new Alert(AlertType.CONFIRMATION, "View All Albums tryckt!");
-                alert.setTitle("");
-                alert.setHeaderText(null);
-                alert.showAndWait();
-                con.handleGetAllAlbumsEvent();
+                try {
+                    con.handleGetAllAlbumsEvent();
+                } catch (Exception e) {
+                    Alert alert = new Alert(AlertType.ERROR, "Could not load albums!");
+                    alert.setTitle("");
+                    alert.setHeaderText(null);
+                    alert.showAndWait();
+                }
             }
         });
 
@@ -384,7 +439,14 @@ public class View {
             @Override
             public void handle(ActionEvent event) {
                 Album slectedAlbum = mainTable.getSelectionModel().getSelectedItem();
-                con.handleDeleteAlbumEvent(slectedAlbum);
+                try {
+                    con.handleDeleteAlbumEvent(slectedAlbum);
+                } catch (Exception e) {
+                    Alert alert = new Alert(AlertType.ERROR, "Could not delete album!");
+                    alert.setTitle("");
+                    alert.setHeaderText(null);
+                    alert.showAndWait();
+                }
             }
         });
 
@@ -400,7 +462,14 @@ public class View {
                     String rating = ri.getRating();
                     String comment = ri.getComment();
                     addReviewDialog.clearFields();
-                    con.handleReviewAlbumEvent(slectedAlbum.getAlbumID(), Integer.parseInt(rating), comment);
+                    try {
+                        con.handleReviewAlbumEvent(slectedAlbum.getAlbumID(), Integer.parseInt(rating), comment);
+                    } catch (Exception e) {
+                        Alert alert = new Alert(AlertType.ERROR, "Could not add review!");
+                        alert.setTitle("");
+                        alert.setHeaderText(null);
+                        alert.showAndWait();
+                    }
                 }
             }
         });
